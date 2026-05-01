@@ -73,4 +73,30 @@ public class SubsystemsConfig {
         public static final double KS                       = 0.0;
         public static final double KV                       = 0.0;
     }
+
+    /**
+     * LockedTurret servo constants.
+     * Debug-only subsystem for locking the turret to a fixed position.
+     */
+    public static final class LockedTurret {
+        public static final String SERVO_NAME      = "servo";
+        public static final double LOCKED_POSITION = 0.7;
+    }
+
+    /**
+     * Turret CRServo constants.
+     * Responsible for rotating the turret toward a target angle using a quadratic speed profile.
+     */
+    public static final class Turret {
+        public static final String SERVO_NAME    = "Turret";
+        public static final String ENCODER_NAME = "TurretEncoder";
+        public static final double TICKS_PER_REV = 8192.0;
+        public static final double GEAR_RATIO    = 5.714;
+        public static final double MIN_ANGLE     = -80.0;
+        public static final double MAX_ANGLE     = 80.0;
+        public static final double BRAKE_DISTANCE = 50.0;
+        public static final double DEAD_ZONE     = 3.14;
+        public static final double MIN_POWER     = 0.07;
+        public static final double IDLE_POWER    = 0.0;
+    }
 }
