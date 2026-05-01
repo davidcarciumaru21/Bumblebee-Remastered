@@ -32,4 +32,16 @@ public class SubsystemsConfig {
         public static final double PUSH_POWER                 = -1.0;
         public static final double IDLE_POWER                 = 0.0;
     }
+
+    /**
+     * Stopper servo constants.
+     * Responsible for blocking or releasing game elements toward the flywheel.
+     */
+    public static final class Stopper {
+        public static final String SERVO_NAME       = "Stopper";
+        public static final double OPEN_POSITION    = 1.0;
+        public static final double CLOSED_POSITION  = 0.0;
+        public static final double TIME_TO_OPEN_MS  = 500;
+        public static final double TIME_TO_CLOSE_MS = 500;
+    }
 }
