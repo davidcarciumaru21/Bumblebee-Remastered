@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 
 @TeleOp(name = "Indexer Test TeleOp", group = "Indexer")
-public class IndexerTestTeleOp extends OpMode {
+public class IndexerTest extends OpMode {
 
     private Indexer indexer;
-    private boolean previousA = false;
-    private boolean previousB = false;
-    private boolean previousX = false;
 
     @Override
     public void init() {
@@ -20,13 +17,9 @@ public class IndexerTestTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        if      (gamepad1.a && !previousA) indexer.pull();
-        else if (gamepad1.b && !previousB) indexer.push();
-        else if (gamepad1.x && !previousX) indexer.idle();
-
-        previousA = gamepad1.a;
-        previousB = gamepad1.b;
-        previousX = gamepad1.x;
+        if      (gamepad1.aWasPressed()) indexer.pull();
+        else if (gamepad1.bWasPressed()) indexer.push();
+        else if (gamepad1.xWasPressed()) indexer.idle();
 
         indexer.update();
 

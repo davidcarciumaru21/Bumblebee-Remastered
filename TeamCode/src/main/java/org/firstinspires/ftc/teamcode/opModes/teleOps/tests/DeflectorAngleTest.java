@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 
 @TeleOp(name = "Deflector Angle Test TeleOp", group = "Deflector")
-public class DeflectorAngleTestTeleOp extends OpMode {
+public class DeflectorAngleTest extends OpMode {
 
     private Deflector deflector;
 
@@ -22,8 +22,8 @@ public class DeflectorAngleTestTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.dpad_up)   currentAngle += STEP;
-        if (gamepad1.dpad_down) currentAngle -= STEP;
+        if (gamepad1.dpadUpWasPressed())   currentAngle += STEP;
+        if (gamepad1.dpadDownWasPressed()) currentAngle -= STEP;
 
         deflector.setAngleInDegrees(currentAngle);
 

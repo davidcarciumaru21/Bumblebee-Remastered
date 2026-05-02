@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.LockedTurret;
 
 @TeleOp(name = "Locked Turret TeleOp", group = "Turret")
-public class LockedTurretTestTeleOp extends OpMode {
+public class LockedTurretTest extends OpMode {
 
     private LockedTurret lockedTurret;
 

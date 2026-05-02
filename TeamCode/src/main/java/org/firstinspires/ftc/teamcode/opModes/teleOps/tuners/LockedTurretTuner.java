@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.LockedTurret;
 
 @TeleOp(name = "Locked Turret Test TeleOp", group = "Turret")
-public class LockedTurretTunerTeleOp extends OpMode {
+public class LockedTurretTuner extends OpMode {
 
     private LockedTurret lockedTurret;
 

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 
 @TeleOp(name = "Stopper Test TeleOp", group = "Stopper")
-public class StopperTestTeleOp extends OpMode {
+public class StopperTest extends OpMode {
 
     private Stopper stopper;
 
@@ -24,7 +24,7 @@ public class StopperTestTeleOp extends OpMode {
         stopper.update();
 
         telemetry.addData("state",    stopper.getState());
-        telemetry.addData("position", stopper.getTargetPosition());
+        telemetry.addData("position", stopper.getPosition());
         telemetry.addData("controls", "A = open | B = close");
         telemetry.update();
     }

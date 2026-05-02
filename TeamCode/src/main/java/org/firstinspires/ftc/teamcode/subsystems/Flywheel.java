@@ -27,7 +27,7 @@ public class Flywheel implements Subsystem {
 
     private double targetRPM       = 0.0;
     private double rampedRPM       = 0.0;
-    private double filteredVoltage = SubsystemsConfig.Flywheel.INITIAL_FILTERED_VOLTAGE;
+    private double filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
     private double customPower     = 0.0;
     private double lastTime        = 0.0;
 
@@ -78,7 +78,7 @@ public class Flywheel implements Subsystem {
         this.targetRPM = 0.0;
         this.rampedRPM = 0.0;
         this.state     = FlywheelState.IDLE;
-        setRawPower(0.0);
+        setRawPower(SubsystemsConfig.Flywheel.IDLE_POWER);
     }
 
     /** Returns the current state of the flywheel. */
@@ -121,9 +121,8 @@ public class Flywheel implements Subsystem {
                 double error = rampedRPM - currentRPM;
                 double p     = SubsystemsConfig.Flywheel.KP * error;
 
-                double measuredVoltage = voltageSensor.getVoltage();
-                filteredVoltage += SubsystemsConfig.Flywheel.VOLTAGE_ALPHA
-                        * (measuredVoltage - filteredVoltage);
+                filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
+                        * (voltageSensor.getVoltage() - filteredVoltage);
 
                 double power = Range.clip((ff + p) / filteredVoltage, 0.0, 1.0);
                 setRawPower(power);

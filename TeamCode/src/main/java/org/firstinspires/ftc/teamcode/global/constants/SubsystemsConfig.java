@@ -11,6 +11,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class SubsystemsConfig {
 
     /**
+     * Voltage sensor constants.
+     * Used for filtered voltage readings across tuners and subsystems.
+     */
+    public static final class VoltageSensor {
+        public static final double INITIAL_FILTERED_VOLTAGE = 13.0;
+        public static final double VOLTAGE_ALPHA            = 0.01;
+    }
+
+    /**
      * Intake motor constants.
      * Responsible for collecting and ejecting game elements.
      */
@@ -76,8 +85,6 @@ public class SubsystemsConfig {
         public static final double TICKS_PER_REV = 28.0;
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
         public static final double AT_SPEED_TOLERANCE = 50.0;
-        public static final double VOLTAGE_ALPHA = 0.01;
-        public static final double INITIAL_FILTERED_VOLTAGE = 13.0;
         public static final double KP = 0.0;
         public static final double KS = 0.0;
         public static final double KV = 0.0;

@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 @TeleOp(name = "Intake Test TeleOp", group = "Intake")
-public class IntakeTestTeleOp extends OpMode {
+public class IntakeTest extends OpMode {
 
     private Intake intake;
-    private boolean previousA = false;
-    private boolean previousB = false;
-    private boolean previousX = false;
 
     @Override
     public void init() {
@@ -20,13 +17,9 @@ public class IntakeTestTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        if      (gamepad1.a && !previousA) intake.pull();
-        else if (gamepad1.b && !previousB) intake.push();
-        else if (gamepad1.x && !previousX) intake.idle();
-
-        previousA = gamepad1.a;
-        previousB = gamepad1.b;
-        previousX = gamepad1.x;
+        if      (gamepad1.aWasPressed()) intake.pull();
+        else if (gamepad1.bWasPressed()) intake.push();
+        else if (gamepad1.xWasPressed()) intake.idle();
 
         intake.update();
 

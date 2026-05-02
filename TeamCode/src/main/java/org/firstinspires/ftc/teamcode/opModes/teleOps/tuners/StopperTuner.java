@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 
 @TeleOp(name = "Stopper Test TeleOp", group = "Stopper")
-public class StopperTunerTeleOp extends OpMode {
+public class StopperTuner extends OpMode {
 
     private Stopper stopper;
 

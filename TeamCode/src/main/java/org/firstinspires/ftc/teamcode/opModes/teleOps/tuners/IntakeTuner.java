@@ -4,31 +4,31 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.subsystems.Indexer;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
-@TeleOp(name = "Indexer Tuner TeleOp", group = "Indexer")
-public class IndexerTunerTeleOp extends OpMode {
+@TeleOp(name = "Intake Tuner TeleOp", group = "Intake")
+public class IntakeTuner extends OpMode {
 
-    private Indexer indexer;
+    private Intake intake;
 
     private double currentPower = 0.0;
-    private double savedPull    = SubsystemsConfig.Indexer.PULL_POWER;
-    private double savedPush    = SubsystemsConfig.Indexer.PUSH_POWER;
-    private double savedIdle    = SubsystemsConfig.Indexer.IDLE_POWER;
+    private double savedPull    = SubsystemsConfig.Intake.PULL_POWER;
+    private double savedPush    = SubsystemsConfig.Intake.PUSH_POWER;
+    private double savedIdle    = SubsystemsConfig.Intake.IDLE_POWER;
 
     private static final double STEP = 0.01;
 
     @Override
     public void init() {
-        indexer = new Indexer(hardwareMap);
+        intake = new Intake(hardwareMap);
     }
 
     @Override
     public void loop() {
 
         // increment / decrement current power
-        if (gamepad1.dpad_up)   currentPower = Math.min(1.0,  currentPower + STEP);
-        if (gamepad1.dpad_down) currentPower = Math.max(-1.0, currentPower - STEP);
+        if (gamepad1.dpadUpWasPressed())   currentPower = Math.min(1.0,  currentPower + STEP);
+        if (gamepad1.dpadDownWasPressed()) currentPower = Math.max(-1.0, currentPower - STEP);
 
         // save current power as pull / push / idle
         if (gamepad1.aWasPressed()) savedPull = currentPower;
@@ -36,13 +36,13 @@ public class IndexerTunerTeleOp extends OpMode {
         if (gamepad1.xWasPressed()) savedIdle = currentPower;
 
         // activate saved powers
-        if      (gamepad1.right_trigger > 0.5) indexer.setPower(savedPull);
-        else if (gamepad1.left_trigger  > 0.5) indexer.setPower(savedPush);
-        else if (gamepad1.yWasPressed())        indexer.setPower(savedIdle);
+        if      (gamepad1.right_trigger > 0.5) intake.setPower(savedPull);
+        else if (gamepad1.left_trigger  > 0.5) intake.setPower(savedPush);
+        else if (gamepad1.yWasPressed())        intake.setPower(savedIdle);
 
-        indexer.update();
+        intake.update();
 
-        telemetry.addData("state",         indexer.getState());
+        telemetry.addData("state",         intake.getState());
         telemetry.addData("current power", currentPower);
         telemetry.addData("saved pull",    savedPull);
         telemetry.addData("saved push",    savedPush);

@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 
 @TeleOp(name = "Deflector Test TeleOp", group = "Deflector")
-public class DeflectorTestTeleOp extends OpMode {
+public class DeflectorTest extends OpMode {
 
     private Deflector deflector;
 
