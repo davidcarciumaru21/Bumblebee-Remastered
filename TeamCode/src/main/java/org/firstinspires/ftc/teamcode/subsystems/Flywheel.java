@@ -13,15 +13,50 @@ import org.firstinspires.ftc.teamcode.global.enums.FlywheelState;
 
 /**
  * Controls the flywheel motors responsible for launching game elements.
- * Uses a PF controller with voltage compensation and RPM ramping.
- * State is staged internally and applied to hardware only in {@link #update()}.
+ *
+ * <p>Control algorithm — PF with voltage compensation and RPM ramping:
+ *
+ * 1. RPM RAMPING:
+ *    Instead of jumping directly to the target RPM, the controller ramps up
+ *    gradually by limiting the maximum RPM change per second (MAX_ACCEL_RPM_PER_SEC).
+ *    This prevents current spikes and mechanical stress on the motors.
+ *    rampedRPM approaches targetRPM at a controlled rate each loop.
+ *
+ * 2. FEEDFORWARD (ff):
+ *    Predicts the power needed to reach the target RPM without waiting for error to build up.
+ *    Two components:
+ *    - KS * signum(rampedRPM): static feedforward — overcomes friction regardless of speed.
+ *    - KV * rampedRPM:         velocity feedforward — scales linearly with target speed.
+ *    Tune KS first (minimum power to move), then KV (power per RPM at steady state).
+ *
+ * 3. PROPORTIONAL CORRECTION (p):
+ *    Corrects the remaining error between rampedRPM and currentRPM.
+ *    p = KP * (rampedRPM - currentRPM)
+ *    Tune KP last — too high causes oscillation, too low causes steady-state error.
+ *
+ * 4. VOLTAGE COMPENSATION:
+ *    Battery voltage drops under load, which would cause the flywheel to slow down.
+ *    An exponential filter smooths the voltage reading to avoid noise:
+ *    filteredVoltage += VOLTAGE_ALPHA * (measuredVoltage - filteredVoltage)
+ *    The total power output is divided by filteredVoltage to normalize it,
+ *    so the same RPM target produces consistent behavior regardless of battery level.
+ *
+ * 5. AT_SPEED detection:
+ *    Once the error between targetRPM and currentRPM is within AT_SPEED_TOLERANCE,
+ *    the state transitions to AT_SPEED — used by ShootingManager to know when to feed.
+ *
+ * State machine:
+ * - IDLE         — flywheel holds at idle power (configurable, can be non-zero)
+ * - RAMPING_UP   — flywheel is accelerating toward target RPM
+ * - AT_SPEED     — flywheel has reached target RPM within tolerance
+ * - CUSTOM_POWER — flywheel runs at a fixed raw power, bypassing PF control
  */
 public class Flywheel implements Subsystem {
 
-    private final DcMotorEx motor1;
-    private final DcMotorEx motor2;
+    private final DcMotorEx     motor1;
+    private final DcMotorEx     motor2;
     private final VoltageSensor voltageSensor;
-    private final ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime   timer = new ElapsedTime();
 
     private FlywheelState state = FlywheelState.IDLE;
 
@@ -30,6 +65,9 @@ public class Flywheel implements Subsystem {
     private double filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
     private double customPower     = 0.0;
     private double lastTime        = 0.0;
+
+    // tunable live — initialized from config, can be overridden by tuners
+    private double kP = SubsystemsConfig.Flywheel.KP;
 
     public Flywheel(HardwareMap hardwareMap) {
         this.motor1 = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Flywheel.MOTOR_NAME_1);
@@ -60,7 +98,7 @@ public class Flywheel implements Subsystem {
      * @param speed ball speed in inches per second
      */
     public void setSpeedInchesPerSecond(double speed) {
-        this.targetRPM = 10.446 * speed + 198.20486; // TODO: replace with real values from calculations
+        this.targetRPM = speed;
         this.state = FlywheelState.RAMPING_UP;
     }
 
@@ -80,6 +118,12 @@ public class Flywheel implements Subsystem {
         this.state     = FlywheelState.IDLE;
         setRawPower(SubsystemsConfig.Flywheel.IDLE_POWER);
     }
+
+    /**
+     * Sets KP live. Use only for tuning.
+     * @param kP proportional gain
+     */
+    public void setKP(double kP) { this.kP = kP; }
 
     /** Returns the current state of the flywheel. */
     public FlywheelState getState() { return this.state; }
@@ -112,21 +156,27 @@ public class Flywheel implements Subsystem {
             case AT_SPEED:
                 double currentRPM = getRPM();
 
+                // ramp toward target RPM at a limited rate to avoid current spikes
                 double maxStep = SubsystemsConfig.Flywheel.MAX_ACCEL_RPM_PER_SEC * deltaTime;
                 double diff    = targetRPM - rampedRPM;
                 rampedRPM     += Range.clip(diff, -maxStep, maxStep);
 
+                // feedforward: predict power needed based on target speed
                 double ff    = SubsystemsConfig.Flywheel.KS * Math.signum(rampedRPM)
                         + SubsystemsConfig.Flywheel.KV * rampedRPM;
-                double error = rampedRPM - currentRPM;
-                double p     = SubsystemsConfig.Flywheel.KP * error;
 
+                // proportional correction: fix remaining error between ramped and actual RPM
+                double error = rampedRPM - currentRPM;
+                double p     = this.kP * error;
+
+                // exponential voltage filter: normalize output to compensate for battery drop
                 filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
                         * (voltageSensor.getVoltage() - filteredVoltage);
 
                 double power = Range.clip((ff + p) / filteredVoltage, 0.0, 1.0);
                 setRawPower(power);
 
+                // transition to AT_SPEED once error is within tolerance
                 if (Math.abs(targetRPM - currentRPM) <= SubsystemsConfig.Flywheel.AT_SPEED_TOLERANCE) {
                     state = FlywheelState.AT_SPEED;
                 } else {

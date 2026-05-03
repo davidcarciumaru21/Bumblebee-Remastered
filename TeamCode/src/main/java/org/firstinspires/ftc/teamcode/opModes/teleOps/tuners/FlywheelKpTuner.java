@@ -11,8 +11,8 @@ public class FlywheelKpTuner extends OpMode {
 
     private Flywheel flywheel;
 
-    private double kP   = SubsystemsConfig.Flywheel.KP;
-    private int    scale = 0; // 10^scale is the step
+    private double kP    = SubsystemsConfig.Flywheel.KP;
+    private int    scale = 0;
 
     @Override
     public void init() {
@@ -32,16 +32,18 @@ public class FlywheelKpTuner extends OpMode {
 
         kP = Math.max(0.0, kP);
 
-        // target RPM
+        flywheel.setKP(kP);
+
         if (gamepad1.aWasPressed()) flywheel.setRPM(3000);
         if (gamepad1.bWasPressed()) flywheel.stop();
 
         flywheel.update();
 
         telemetry.addLine("Flywheel kP Tuner");
+        telemetry.addLine("Copy final kP value to SubsystemsConfig.Flywheel.KP");
         telemetry.addData("kP",          "%.6f", kP);
         telemetry.addData("scale",       "10^" + scale + " = " + Math.pow(10, scale));
-        telemetry.addData("target RPM",  flywheel.getTargetRPM());
+        telemetry.addData("target RPM",  "%.1f", flywheel.getTargetRPM());
         telemetry.addData("current RPM", "%.1f", flywheel.getRPM());
         telemetry.addData("state",       flywheel.getState());
         telemetry.addLine("DPAD UP/DOWN = modify kP | DPAD RIGHT/LEFT = scale | A = 3000 RPM | B = stop");

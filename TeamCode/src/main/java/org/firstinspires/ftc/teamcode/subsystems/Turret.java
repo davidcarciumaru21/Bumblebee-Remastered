@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.TurretState;
@@ -34,11 +35,17 @@ import org.firstinspires.ftc.teamcode.global.enums.TurretState;
  */
 public class Turret implements Subsystem {
 
-    private final CRServo turret;
-    private final DcMotorEx encoder;
+    private final CRServo       turret;
+    private final DcMotorEx     encoder;
+    private final VoltageSensor voltageSensor;
 
-    private TurretState state = TurretState.IDLE;
-    private double targetAngle = 0.0;
+    private TurretState state          = TurretState.IDLE;
+    private double      targetAngle    = 0.0;
+    private double      filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
+
+    // tunable live — initialized from config, can be overridden by tuners
+    private double brakeDistance = SubsystemsConfig.Turret.BRAKE_DISTANCE;
+    private double deadZone      = SubsystemsConfig.Turret.DEAD_ZONE;
 
     public Turret(HardwareMap hardwareMap) {
         this.turret = hardwareMap.get(CRServo.class, SubsystemsConfig.Turret.SERVO_NAME);
@@ -47,6 +54,8 @@ public class Turret implements Subsystem {
         this.encoder = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Turret.ENCODER_NAME);
         this.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        this.voltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
     /**
@@ -63,9 +72,22 @@ public class Turret implements Subsystem {
     }
 
     /** Stops the turret and transitions to IDLE state. */
-    public void idle() {
-        this.state = TurretState.IDLE;
-    }
+    public void idle() { this.state = TurretState.IDLE; }
+
+    /** Directly sets raw power to the CRServo. Use only for testing. */
+    public void setRawPower(double power) { this.turret.setPower(power); }
+
+    /**
+     * Sets the brake distance live. Use only for tuning.
+     * @param brakeDistance angular distance in degrees at which deceleration begins
+     */
+    public void setBrakeDistance(double brakeDistance) { this.brakeDistance = brakeDistance; }
+
+    /**
+     * Sets the dead zone live. Use only for tuning.
+     * @param deadZone angular error in degrees below which turret is considered at target
+     */
+    public void setDeadZone(double deadZone) { this.deadZone = deadZone; }
 
     /** Returns true if the turret has reached its target angle. */
     public boolean isAtPlace() { return this.state == TurretState.AT_PLACE; }
@@ -83,6 +105,12 @@ public class Turret implements Subsystem {
 
     /** Returns the current target angle in degrees. */
     public double getTargetAngle() { return this.targetAngle; }
+
+    /** Returns the raw encoder ticks. Useful for verifying encoder direction. */
+    public int getEncoderTicks() { return this.encoder.getCurrentPosition(); }
+
+    /** Returns the current filtered voltage. */
+    public double getFilteredVoltage() { return this.filteredVoltage; }
 
     /**
      * Quadratic speed profile function.
@@ -107,22 +135,29 @@ public class Turret implements Subsystem {
     /** Applies the staged control to hardware. Must be called every loop. */
     @Override
     public void update() {
+
+        filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
+                * (voltageSensor.getVoltage() - filteredVoltage);
+
+        // convert MIN_POWER_VOLTS to raw power based on current voltage
+        double minPower = SubsystemsConfig.Turret.MIN_POWER_VOLTS / filteredVoltage;
+
         switch (state) {
             case IDLE:
                 turret.setPower(SubsystemsConfig.Turret.IDLE_POWER);
                 break;
 
             case GOING_TO:
-                double deltaAngle    = targetAngle - getCurrentAngle();
-                double interpolator  = deltaAngle / SubsystemsConfig.Turret.BRAKE_DISTANCE;
+                double deltaAngle   = targetAngle - getCurrentAngle();
+                double interpolator = deltaAngle / this.brakeDistance;
 
                 // clamp interpolator to [-1, 1]
                 if (Math.abs(interpolator) > 1)
                     interpolator = interpolator / Math.abs(interpolator);
 
-                double speed = twoXSqrd(interpolator, SubsystemsConfig.Turret.MIN_POWER);
+                double speed = twoXSqrd(interpolator, minPower);
 
-                if (Math.abs(deltaAngle) < SubsystemsConfig.Turret.DEAD_ZONE) {
+                if (Math.abs(deltaAngle) < this.deadZone) {
                     turret.setPower(0.0);
                     state = TurretState.AT_PLACE;
                 } else {
