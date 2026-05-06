@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.global.enums.StopperState;
+import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.StopperState;
 
 /**
  * Controls the stopper servo responsible for blocking or releasing game elements.

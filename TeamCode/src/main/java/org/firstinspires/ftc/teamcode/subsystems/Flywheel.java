@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.global.enums.FlywheelState;
+import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.FlywheelState;
 
 /**
  * Controls the flywheel motors responsible for launching game elements.

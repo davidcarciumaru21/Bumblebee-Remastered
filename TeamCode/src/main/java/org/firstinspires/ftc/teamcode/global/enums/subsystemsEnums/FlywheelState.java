@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.global.enums;
+package org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums;
 
 public enum FlywheelState {
     IDLE,

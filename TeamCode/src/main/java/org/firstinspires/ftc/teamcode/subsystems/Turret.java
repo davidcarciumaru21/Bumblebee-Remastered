@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.global.enums.TurretState;
+import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
 
 /**
  * Controls the turret CRServo using a quadratic speed profile (twoXSqrd).

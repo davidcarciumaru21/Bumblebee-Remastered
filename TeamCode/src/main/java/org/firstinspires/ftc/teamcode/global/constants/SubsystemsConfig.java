@@ -24,16 +24,20 @@ public class SubsystemsConfig {
     /**
      * Intake motor constants.
      * Responsible for collecting and ejecting game elements.
-     * PULL_POWER — power applied when collecting. Positive = inward.
-     * PUSH_POWER — power applied when ejecting. Negative = outward.
-     * IDLE_POWER — power applied when idle. Non-zero to hold game elements in place.
+     * PULL_POWER         — power applied when collecting. Positive = inward.
+     * PUSH_POWER         — power applied when ejecting. Negative = outward.
+     * IDLE_POWER         — power applied when idle. Non-zero to hold game elements in place.
+     * STALL_CURRENT_AMPS — current threshold in amps above which stall is detected.
+     * STALL_TIME_MS      — time in ms current must exceed threshold before stall is confirmed.
      */
     public static final class Intake {
-        public static final String                  MOTOR_NAME = "Intake";
-        public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
-        public static final double                  PULL_POWER = 1.0;
-        public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.3;
+        public static final String                  MOTOR_NAME         = "Intake";
+        public static final DcMotorSimple.Direction DIRECTION          = DcMotorSimple.Direction.FORWARD;
+        public static final double                  PULL_POWER         = 1.0;
+        public static final double                  PUSH_POWER         = -1.0;
+        public static final double                  IDLE_POWER         = 0.3;
+        public static final double                  STALL_CURRENT_AMPS = 10.0;
+        public static final double                  STALL_TIME_MS      = 300.0;
     }
 
     /**

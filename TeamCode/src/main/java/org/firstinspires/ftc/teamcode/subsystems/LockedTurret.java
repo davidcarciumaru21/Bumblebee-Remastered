@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.global.enums.LockedTurretState;
+import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.LockedTurretState;
 
 /**
  * Debug-only locked turret subsystem.

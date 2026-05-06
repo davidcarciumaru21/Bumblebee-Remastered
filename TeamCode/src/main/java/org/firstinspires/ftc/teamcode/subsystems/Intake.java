@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
-import org.firstinspires.ftc.teamcode.global.enums.IntakeState;
+import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.IntakeState;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * Controls the intake motor responsible for collecting and ejecting game elements.
@@ -12,12 +15,12 @@ import org.firstinspires.ftc.teamcode.global.enums.IntakeState;
  */
 public class Intake implements Subsystem {
 
-    private final DcMotor intake;
-    private IntakeState state = IntakeState.IDLE;
-    private double customPower = 0.0;
+    private final DcMotorEx intake;
+    private IntakeState state      = IntakeState.IDLE;
+    private double      customPower = 0.0;
 
     public Intake(HardwareMap hardwareMap) {
-        this.intake = hardwareMap.get(DcMotor.class, SubsystemsConfig.Intake.MOTOR_NAME);
+        this.intake = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Intake.MOTOR_NAME);
         this.intake.setDirection(SubsystemsConfig.Intake.DIRECTION);
         this.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -38,11 +41,14 @@ public class Intake implements Subsystem {
      */
     public void setPower(double power) {
         this.customPower = power;
-        this.state = IntakeState.CUSTOM;
+        this.state       = IntakeState.CUSTOM;
     }
 
     /** Returns the current state of the intake. */
     public IntakeState getState() { return this.state; }
+
+    /** Returns the current draw of the intake motor in amps. Used for stall detection. */
+    public double getCurrent() { return this.intake.getCurrent(CurrentUnit.AMPS); }
 
     /** Applies the staged power to hardware. Must be called every loop. */
     @Override
