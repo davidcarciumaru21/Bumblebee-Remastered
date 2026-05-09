@@ -74,16 +74,20 @@ public class SubsystemsConfig {
     /**
      * Deflector servo constants.
      * Responsible for adjusting the trajectory of game elements.
-     * IDLE_POSITION — servo position when deflector is at rest.
-     * MIN_ANGLE     — minimum launch angle in radians (relative to horizontal). Measured physically.
-     * MAX_ANGLE     — maximum launch angle in radians (relative to horizontal). Measured physically.
+     * IDLE_POSITION  — servo position when deflector is at rest.
+     * OPEN_POSITION  — servo position when deflector is fully open.
+     * CLOSE_POSITION — servo position when deflector is fully closed.
+     * MIN_ANGLE      — minimum launch angle in radians (relative to horizontal). Measured physically.
+     * MAX_ANGLE      — maximum launch angle in radians (relative to horizontal). Measured physically.
      */
     public static final class Deflector {
-        public static final String          SERVO_NAME    = "Deflector";
-        public static final Servo.Direction DIRECTION     = Servo.Direction.FORWARD;
-        public static final double          IDLE_POSITION = 0.0;
-        public static final double          MIN_ANGLE     = 0;
-        public static final double          MAX_ANGLE     = 0;
+        public static final String          SERVO_NAME     = "Deflector";
+        public static final Servo.Direction DIRECTION      = Servo.Direction.FORWARD;
+        public static final double          IDLE_POSITION  = 0.0;
+        public static final double          OPEN_POSITION  = 1.0;
+        public static final double          CLOSE_POSITION = 0.0;
+        public static final double          MIN_ANGLE      = Math.toRadians(0);
+        public static final double          MAX_ANGLE      = Math.toRadians(0);
     }
 
     /**
@@ -142,5 +146,23 @@ public class SubsystemsConfig {
         public static final double DEAD_ZONE       = 3.14;
         public static final double MIN_POWER_VOLTS = 0.0;
         public static final double IDLE_POWER      = 0.0;
+    }
+
+    /**
+     * Drivetrain motor constants.
+     * Mecanum drive — 4 motors.
+     * Directions set for standard mecanum configuration.
+     */
+
+    public static final class Drivetrain {
+        public static final String                  FRONT_LEFT_MOTOR  = "frontLeft";
+        public static final String                  FRONT_RIGHT_MOTOR = "frontRight";
+        public static final String                  BACK_LEFT_MOTOR   = "backLeft";
+        public static final String                  BACK_RIGHT_MOTOR  = "backRight";
+
+        public static final DcMotorSimple.Direction FRONT_LEFT_DIRECTION  = DcMotorSimple.Direction.REVERSE;
+        public static final DcMotorSimple.Direction FRONT_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;
+        public static final DcMotorSimple.Direction BACK_LEFT_DIRECTION   = DcMotorSimple.Direction.REVERSE;
+        public static final DcMotorSimple.Direction BACK_RIGHT_DIRECTION  = DcMotorSimple.Direction.FORWARD;
     }
 }
