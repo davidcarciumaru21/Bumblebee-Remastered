@@ -35,8 +35,8 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction DIRECTION          = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER         = 1.0;
         public static final double                  PUSH_POWER         = -1.0;
-        public static final double                  IDLE_POWER         = 0.3;
-        public static final double                  STALL_CURRENT_AMPS = 10.0;
+        public static final double                  IDLE_POWER         = 0.4;
+        public static final double                  STALL_CURRENT_AMPS = 6.0;
         public static final double                  STALL_TIME_MS      = 300.0;
     }
 
@@ -49,10 +49,10 @@ public class SubsystemsConfig {
      */
     public static final class Indexer {
         public static final String                  MOTOR_NAME = "Indexer";
-        public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.REVERSE;
+        public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER = 1.0;
         public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.3;
+        public static final double                  IDLE_POWER = 0.4;
     }
 
     /**
@@ -65,10 +65,10 @@ public class SubsystemsConfig {
      */
     public static final class Stopper {
         public static final String SERVO_NAME       = "Stopper";
-        public static final double OPEN_POSITION    = 1.0;
-        public static final double CLOSED_POSITION  = 0.0;
-        public static final double TIME_TO_OPEN_MS  = 500;
-        public static final double TIME_TO_CLOSE_MS = 500;
+        public static final double OPEN_POSITION    = 0.15;
+        public static final double CLOSED_POSITION  = 0.625;
+        public static final double TIME_TO_OPEN_MS  = 150;
+        public static final double TIME_TO_CLOSE_MS = 150;
     }
 
     /**
@@ -83,11 +83,9 @@ public class SubsystemsConfig {
     public static final class Deflector {
         public static final String          SERVO_NAME     = "Deflector";
         public static final Servo.Direction DIRECTION      = Servo.Direction.FORWARD;
-        public static final double          IDLE_POSITION  = 0.0;
-        public static final double          OPEN_POSITION  = 1.0;
-        public static final double          CLOSE_POSITION = 0.0;
-        public static final double          MIN_ANGLE      = Math.toRadians(0);
-        public static final double          MAX_ANGLE      = Math.toRadians(0);
+        public static final double          IDLE_POSITION  = 0.55;
+        public static final double          MIN_ANGLE      = Math.toRadians(50);
+        public static final double          MAX_ANGLE      = Math.toRadians(70);
     }
 
     /**
@@ -117,10 +115,10 @@ public class SubsystemsConfig {
         public static final double IDLE_POWER            = 0.0;
         public static final double TICKS_PER_REV         = 28.0;
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
-        public static final double AT_SPEED_TOLERANCE    = 50.0;
-        public static final double KP                    = 0.0;
-        public static final double KS                    = 0.0;
-        public static final double KV                    = 0.0;
+        public static final double AT_SPEED_TOLERANCE    = 80.0;
+        public static final double KP                    = 0.023;
+        public static final double KS                    = 0.09516;
+        public static final double KV                    = 0.0024;
     }
 
     /**
@@ -137,14 +135,14 @@ public class SubsystemsConfig {
      */
     public static final class Turret {
         public static final String SERVO_NAME      = "Turret";
-        public static final String ENCODER_NAME    = "TurretEncoder";
+        public static final String ENCODER_NAME    = "FrontRight";
         public static final double TICKS_PER_REV   = 8192.0;
         public static final double GEAR_RATIO      = 5.714;
         public static final double MIN_ANGLE       = -80.0;
         public static final double MAX_ANGLE       = 80.0;
-        public static final double BRAKE_DISTANCE  = 50.0;
-        public static final double DEAD_ZONE       = 3.14;
-        public static final double MIN_POWER_VOLTS = 0.0;
+        public static final double BRAKE_DISTANCE  = 70.0;
+        public static final double DEAD_ZONE       = 3;
+        public static final double MIN_POWER_VOLTS = 1.2;
         public static final double IDLE_POWER      = 0.0;
     }
 
@@ -155,10 +153,10 @@ public class SubsystemsConfig {
      */
 
     public static final class Drivetrain {
-        public static final String                  FRONT_LEFT_MOTOR  = "frontLeft";
-        public static final String                  FRONT_RIGHT_MOTOR = "frontRight";
-        public static final String                  BACK_LEFT_MOTOR   = "backLeft";
-        public static final String                  BACK_RIGHT_MOTOR  = "backRight";
+        public static final String                  FRONT_LEFT_MOTOR  = "FrontLeft";
+        public static final String                  FRONT_RIGHT_MOTOR = "FrontRight";
+        public static final String                  BACK_LEFT_MOTOR   = "BackLeft";
+        public static final String                  BACK_RIGHT_MOTOR  = "BackRight";
 
         public static final DcMotorSimple.Direction FRONT_LEFT_DIRECTION  = DcMotorSimple.Direction.REVERSE;
         public static final DcMotorSimple.Direction FRONT_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;

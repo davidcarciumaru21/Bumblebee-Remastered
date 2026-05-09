@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOps.tests;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 
 @TeleOp(name = "Deflector Angle Test TeleOp", group = "Deflector")
@@ -10,9 +11,9 @@ public class DeflectorAngleTest extends OpMode {
 
     private Deflector deflector;
 
-    private double currentAngle = 40.0;
+    private double currentAngle = 50.0;
 
-    private static final double STEP = 2.0; // degrees
+    private static final double STEP = 1.0; // degrees
 
     @Override
     public void init() {
@@ -22,8 +23,8 @@ public class DeflectorAngleTest extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.dpadUpWasPressed())   currentAngle += STEP;
-        if (gamepad1.dpadDownWasPressed()) currentAngle -= STEP;
+        if (gamepad1.dpadUpWasPressed() && currentAngle < Math.toDegrees(SubsystemsConfig.Deflector.MAX_ANGLE))   currentAngle += STEP;
+        if (gamepad1.dpadDownWasPressed() && currentAngle >  Math.toDegrees(SubsystemsConfig.Deflector.MIN_ANGLE)) currentAngle -= STEP;
 
         deflector.setAngleInDegrees(currentAngle);
 

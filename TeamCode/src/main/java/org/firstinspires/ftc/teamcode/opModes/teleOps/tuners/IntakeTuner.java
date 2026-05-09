@@ -38,7 +38,8 @@ public class IntakeTuner extends OpMode {
         // activate saved powers
         if      (gamepad1.right_trigger > 0.5) intake.setPower(savedPull);
         else if (gamepad1.left_trigger  > 0.5) intake.setPower(savedPush);
-        else if (gamepad1.yWasPressed())        intake.setPower(savedIdle);
+        else if (gamepad1.y)                   intake.setPower(savedIdle);
+        else                                   intake.setPower(currentPower);
 
         intake.update();
 

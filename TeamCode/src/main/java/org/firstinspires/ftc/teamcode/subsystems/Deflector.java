@@ -14,24 +14,12 @@ import org.firstinspires.ftc.teamcode.utils.MathUtils;
 public class Deflector implements Subsystem {
 
     private final Servo deflector;
-    private DeflectorState state         = DeflectorState.CLOSED;
-    private double         targetPosition = SubsystemsConfig.Deflector.CLOSE_POSITION;
+    private DeflectorState state         = DeflectorState.CUSTOM;
+    private double         targetPosition = SubsystemsConfig.Deflector.IDLE_POSITION;
 
     public Deflector(HardwareMap hardwareMap) {
         this.deflector = hardwareMap.get(Servo.class, SubsystemsConfig.Deflector.SERVO_NAME);
         this.deflector.setDirection(SubsystemsConfig.Deflector.DIRECTION);
-    }
-
-    /** Opens the deflector to the configured open position. */
-    public void open() {
-        this.targetPosition = SubsystemsConfig.Deflector.OPEN_POSITION;
-        this.state          = DeflectorState.OPEN;
-    }
-
-    /** Closes the deflector to the configured close position. */
-    public void close() {
-        this.targetPosition = SubsystemsConfig.Deflector.CLOSE_POSITION;
-        this.state          = DeflectorState.CLOSED;
     }
 
     /**
@@ -39,7 +27,7 @@ public class Deflector implements Subsystem {
      * @param angle target angle in degrees
      */
     public void setAngleInDegrees(double angle) {
-        this.targetPosition = MathUtils.clamp(angle,
+        this.targetPosition = MathUtils.clamp(0.032 * angle - 1.37,
                 0.0,
                 1.0
         );

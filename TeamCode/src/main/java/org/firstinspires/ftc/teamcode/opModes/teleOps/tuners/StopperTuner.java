@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 
-@TeleOp(name = "Stopper Test TeleOp", group = "Stopper")
+@TeleOp(name = "Stopper Tuner TeleOp", group = "Stopper")
 public class StopperTuner extends OpMode {
 
     private Stopper stopper;

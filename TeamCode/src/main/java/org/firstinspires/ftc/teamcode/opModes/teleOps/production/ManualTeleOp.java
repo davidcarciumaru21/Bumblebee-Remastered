@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
@@ -47,6 +48,7 @@ public class ManualTeleOp extends OpMode {
     private IMU       imu;
 
     private Intake    intake;
+    private Indexer   indexer;
     private Deflector deflector;
     private Stopper   stopper;
     private Turret    turret;
@@ -55,9 +57,11 @@ public class ManualTeleOp extends OpMode {
     private boolean fieldCentric  = true;
     private double  turretAngle   = 0.0;
     private double  flywheelSpeed = 0.0;
+    private double  deflectorAngle = SubsystemsConfig.Deflector.IDLE_POSITION;
 
     private static final double TURRET_STEP   = 5.0;   // degrees per press
     private static final double FLYWHEEL_STEP = 100.0; // RPM per press
+    private static final double DEFLECTOR_STEP = 0.01;
 
     @Override
     public void init() {
@@ -87,6 +91,7 @@ public class ManualTeleOp extends OpMode {
 
         // subsystems
         intake    = new Intake(hardwareMap);
+        indexer   = new Indexer(hardwareMap);
         deflector = new Deflector(hardwareMap);
         stopper   = new Stopper(hardwareMap);
         turret    = new Turret(hardwareMap);
@@ -125,18 +130,19 @@ public class ManualTeleOp extends OpMode {
         }
 
         // intake — held
-        if (gamepad2.right_trigger > 0.1) intake.pull();
+        if (gamepad1.right_trigger > 0.1) intake.pull();
         else                              intake.idle();
 
-        // deflector
-        if (gamepad2.aWasPressed())           deflector.open();
-        if (gamepad2.bWasPressed())           deflector.close();
-        if (gamepad2.rightBumperWasPressed()) deflector.open();
-        if (gamepad2.leftBumperWasPressed())  deflector.close();
+        if (gamepad1.left_trigger > 0.1) indexer.pull();
+        else                             indexer.push();
+
+        if (gamepad1.rightBumperWasPressed()) deflectorAngle += DEFLECTOR_STEP;
+        else                                  deflectorAngle -= DEFLECTOR_STEP;
+        deflector.setPosition(deflectorAngle);
 
         // stopper
-        if (gamepad2.xWasPressed()) stopper.open();
-        if (gamepad2.yWasPressed()) stopper.close();
+        if (gamepad1.xWasPressed()) stopper.open();
+        if (gamepad1.yWasPressed()) stopper.close();
 
         // turret
         if (gamepad2.dpadRightWasPressed()) turretAngle += TURRET_STEP;
@@ -151,6 +157,7 @@ public class ManualTeleOp extends OpMode {
 
         // update subsystems
         intake.update();
+        indexer.update();
         deflector.update();
         stopper.update();
         turret.update();

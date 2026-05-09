@@ -27,8 +27,8 @@ public class IndexerTuner extends OpMode {
     public void loop() {
 
         // increment / decrement current power
-        if (gamepad1.dpad_up)   currentPower = Math.min(1.0,  currentPower + STEP);
-        if (gamepad1.dpad_down) currentPower = Math.max(-1.0, currentPower - STEP);
+        if (gamepad1.dpadUpWasPressed())   currentPower = Math.min(1.0,  currentPower + STEP);
+        if (gamepad1.dpadDownWasPressed()) currentPower = Math.max(-1.0, currentPower - STEP);
 
         // save current power as pull / push / idle
         if (gamepad1.aWasPressed()) savedPull = currentPower;
@@ -38,7 +38,8 @@ public class IndexerTuner extends OpMode {
         // activate saved powers
         if      (gamepad1.right_trigger > 0.5) indexer.setPower(savedPull);
         else if (gamepad1.left_trigger  > 0.5) indexer.setPower(savedPush);
-        else if (gamepad1.yWasPressed())        indexer.setPower(savedIdle);
+        else if (gamepad1.y)                   indexer.setPower(savedIdle);
+        else                                   indexer.setPower(currentPower);
 
         indexer.update();
 
