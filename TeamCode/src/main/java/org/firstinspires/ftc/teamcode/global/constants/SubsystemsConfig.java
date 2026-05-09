@@ -74,16 +74,16 @@ public class SubsystemsConfig {
     /**
      * Deflector servo constants.
      * Responsible for adjusting the trajectory of game elements.
-     * IDLE_POSITION              — servo position when deflector is at rest.
-     * DEGREES_TO_POSITION_SCALE  — slope of the linear mapping from degrees to servo position.
-     * DEGREES_TO_POSITION_OFFSET — intercept of the linear mapping from degrees to servo position.
+     * IDLE_POSITION — servo position when deflector is at rest.
+     * MIN_ANGLE     — minimum launch angle in radians (relative to horizontal). Measured physically.
+     * MAX_ANGLE     — maximum launch angle in radians (relative to horizontal). Measured physically.
      */
     public static final class Deflector {
-        public static final String          SERVO_NAME                 = "Deflector";
-        public static final Servo.Direction DIRECTION                  = Servo.Direction.FORWARD;
-        public static final double          IDLE_POSITION              = 0.0;
-        public static final double          DEGREES_TO_POSITION_SCALE  = 0.0;
-        public static final double          DEGREES_TO_POSITION_OFFSET = 0.0;
+        public static final String          SERVO_NAME    = "Deflector";
+        public static final Servo.Direction DIRECTION     = Servo.Direction.FORWARD;
+        public static final double          IDLE_POSITION = 0.0;
+        public static final double          MIN_ANGLE     = 0;
+        public static final double          MAX_ANGLE     = 0;
     }
 
     /**

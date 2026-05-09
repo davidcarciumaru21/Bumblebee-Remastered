@@ -564,7 +564,7 @@ class LateralVelocityTuner extends OpMode {
  * @author Baron Henderson - 20077 The Indubitables
  * @author Aaron Yang - 10158 Scott's Bots
  * @author Harrison Womack - 10158 Scott's Bots
- * @version 1.0, 3/13/2024
+ * @version 1.0, 3/13/2024s
  */
 class ForwardZeroPowerAccelerationTuner extends OpMode {
     private final ArrayList<Double> accelerations = new ArrayList<>();
