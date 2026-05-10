@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -35,10 +34,8 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.FlywheelState
  *    Tune KP last — too high causes oscillation, too low causes steady-state error.
  *
  * 4. VOLTAGE COMPENSATION:
- *    Battery voltage drops under load, which would cause the flywheel to slow down.
- *    An exponential filter smooths the voltage reading to avoid noise:
- *    filteredVoltage += VOLTAGE_ALPHA * (measuredVoltage - filteredVoltage)
- *    The total power output is divided by filteredVoltage to normalize it,
+ *    Voltage is provided externally via {@link VoltageSensor}, updated once per loop.
+ *    The total power output is divided by filtered voltage to normalize it,
  *    so the same RPM target produces consistent behavior regardless of battery level.
  *
  * 5. AT_SPEED detection:
@@ -53,23 +50,22 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.FlywheelState
  */
 public class Flywheel implements Subsystem {
 
-    private final DcMotorEx     motor1;
-    private final DcMotorEx     motor2;
+    private final DcMotorEx    motor1;
+    private final DcMotorEx    motor2;
     private final VoltageSensor voltageSensor;
-    private final ElapsedTime   timer = new ElapsedTime();
+    private final ElapsedTime  timer = new ElapsedTime();
 
     private FlywheelState state = FlywheelState.IDLE;
 
-    private double targetRPM       = 0.0;
-    private double rampedRPM       = 0.0;
-    private double filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
-    private double customPower     = 0.0;
-    private double lastTime        = 0.0;
+    private double targetRPM   = 0.0;
+    private double rampedRPM   = 0.0;
+    private double customPower = 0.0;
+    private double lastTime    = 0.0;
 
     // tunable live — initialized from config, can be overridden by tuners
     private double kP = SubsystemsConfig.Flywheel.KP;
 
-    public Flywheel(HardwareMap hardwareMap) {
+    public Flywheel(HardwareMap hardwareMap, VoltageSensor voltageSensor) {
         this.motor1 = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Flywheel.MOTOR_NAME_1);
         this.motor2 = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Flywheel.MOTOR_NAME_2);
 
@@ -80,8 +76,8 @@ public class Flywheel implements Subsystem {
         this.motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         this.motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        this.voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        this.lastTime = timer.seconds();
+        this.voltageSensor = voltageSensor;
+        this.lastTime      = timer.seconds();
     }
 
     /**
@@ -90,7 +86,7 @@ public class Flywheel implements Subsystem {
      */
     public void setRPM(double rpm) {
         this.targetRPM = rpm;
-        this.state = FlywheelState.RAMPING_UP;
+        this.state     = FlywheelState.RAMPING_UP;
     }
 
     /**
@@ -98,8 +94,8 @@ public class Flywheel implements Subsystem {
      * @param speed ball speed in inches per second
      */
     public void setSpeedInchesPerSecond(double speed) {
-        this.targetRPM = speed;
-        this.state = FlywheelState.RAMPING_UP;
+        this.targetRPM = speed; // TODO: replace with real regression
+        this.state     = FlywheelState.RAMPING_UP;
     }
 
     /**
@@ -108,7 +104,7 @@ public class Flywheel implements Subsystem {
      */
     public void setPower(double power) {
         this.customPower = power;
-        this.state = FlywheelState.CUSTOM_POWER;
+        this.state       = FlywheelState.CUSTOM_POWER;
     }
 
     /** Stops the flywheel and resets all control state. */
@@ -169,11 +165,12 @@ public class Flywheel implements Subsystem {
                 double error = rampedRPM - currentRPM;
                 double p     = this.kP * error;
 
-                // exponential voltage filter: normalize output to compensate for battery drop
-                filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
-                        * (voltageSensor.getVoltage() - filteredVoltage);
-
-                double power = Range.clip((ff + p) / filteredVoltage, 0.0, 1.0);
+                // normalize output to compensate for battery drop using external voltage sensor
+                double power = Range.clip(
+                        (ff + p) / voltageSensor.getVoltage(),
+                        0.0,
+                        1.0
+                );
                 setRawPower(power);
 
                 // transition to AT_SPEED once error is within tolerance

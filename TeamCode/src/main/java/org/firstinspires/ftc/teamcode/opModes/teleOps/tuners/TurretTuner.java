@@ -5,10 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Turret Tuner", group = "Turret")
 public class TurretTuner extends OpMode {
 
+    private VoltageSensor voltageSensor;
     private Turret turret;
 
     private double brakeDistance = SubsystemsConfig.Turret.BRAKE_DISTANCE;
@@ -19,7 +21,8 @@ public class TurretTuner extends OpMode {
 
     @Override
     public void init() {
-        turret = new Turret(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        turret = new Turret(hardwareMap, voltageSensor);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class TurretTuner extends OpMode {
         telemetry.addData("target angle",   "%.2f", turret.getTargetAngle());
         telemetry.addData("current angle",  "%.2f", turret.getCurrentAngle());
         telemetry.addData("state",          turret.getState());
-        telemetry.addData("voltage",        "%.4f", turret.getFilteredVoltage());
+        telemetry.addData("voltage",        "%.4f", voltageSensor.getVoltage());
         telemetry.addLine("DPAD UP/DOWN = BRAKE_DISTANCE ±1 | DPAD RIGHT/LEFT = DEAD_ZONE ±0.1");
         telemetry.addLine("A = +45° | B = -45° | Y = 0°");
         telemetry.update();

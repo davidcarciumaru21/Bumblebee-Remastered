@@ -4,17 +4,20 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Flywheel Max Speed Test", group = "Flywheel")
 public class FlywheelMaxSpeedTest extends OpMode {
 
-    private Flywheel flywheel;
+    private Flywheel      flywheel;
+    private VoltageSensor voltageSensor;
 
     private static final double TARGET_RPM = 6000;
 
     @Override
     public void init() {
-        flywheel = new Flywheel(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 
     @Override
@@ -24,6 +27,7 @@ public class FlywheelMaxSpeedTest extends OpMode {
 
     @Override
     public void loop() {
+        voltageSensor.update();
         flywheel.update();
 
         telemetry.addLine("Flywheel Max Speed Test");
@@ -31,6 +35,7 @@ public class FlywheelMaxSpeedTest extends OpMode {
         telemetry.addData("current RPM", "%.1f", flywheel.getRPM());
         telemetry.addData("state",       flywheel.getState());
         telemetry.addData("at speed",    flywheel.isAtSpeed());
+        telemetry.addData("voltage",     "%.4f", voltageSensor.getVoltage());
         telemetry.update();
     }
 

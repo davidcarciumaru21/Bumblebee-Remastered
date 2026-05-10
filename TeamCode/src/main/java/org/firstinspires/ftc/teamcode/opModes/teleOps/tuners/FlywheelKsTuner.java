@@ -2,33 +2,29 @@ package org.firstinspires.ftc.teamcode.opModes.teleOps.tuners;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Flywheel kS Tuner", group = "Flywheel")
 public class FlywheelKsTuner extends OpMode {
 
-    private Flywheel flywheel;
+    private Flywheel      flywheel;
     private VoltageSensor voltageSensor;
-    private double filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
-    private double power = 0.0;
+    private double        power = 0.0;
 
     private static final double STEP_COARSE = 0.01;
     private static final double STEP_FINE   = 0.001;
 
     @Override
     public void init() {
-        flywheel      = new Flywheel(hardwareMap);
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        voltageSensor = new VoltageSensor(hardwareMap);
+        flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 
     @Override
     public void loop() {
-
-        filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
-                * (voltageSensor.getVoltage() - filteredVoltage);
 
         if (gamepad1.dpadUpWasPressed())      power += STEP_COARSE;
         if (gamepad1.dpadDownWasPressed())    power -= STEP_COARSE;
@@ -39,15 +35,17 @@ public class FlywheelKsTuner extends OpMode {
         power = Math.max(0.0, Math.min(1.0, power));
 
         flywheel.setPower(power);
+
+        voltageSensor.update();
         flywheel.update();
 
         // kS in volts = power * voltage, represents the minimum voltage
         // needed to overcome static friction and start the flywheel moving
-        double ksVolts = power * filteredVoltage;
+        double ksVolts = power * voltageSensor.getVoltage();
 
         telemetry.addLine("Flywheel kS Tuner");
         telemetry.addData("power",      "%.4f", power);
-        telemetry.addData("voltage",    "%.4f", filteredVoltage);
+        telemetry.addData("voltage",    "%.4f", voltageSensor.getVoltage());
         telemetry.addData("kS (volts)", "%.4f", ksVolts);
         telemetry.addData("rpm",        "%.1f", flywheel.getRPM());
         telemetry.addLine("DPAD UP/DOWN = ±0.01 | bumpers = ±0.001 | Y = reset");

@@ -5,15 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Turret Encoder Test", group = "Turret")
 public class TurretEncoderTest extends OpMode {
 
+    private VoltageSensor voltageSensor;
     private Turret turret;
 
     @Override
     public void init() {
-        turret = new Turret(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        turret = new Turret(hardwareMap, voltageSensor);
     }
 
     @Override

@@ -4,19 +4,22 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Flywheel Speed Test", group = "Flywheel")
 public class FlywheelSpeedTest extends OpMode {
 
-    private Flywheel flywheel;
-    private double targetRPM = 0.0;
+    private Flywheel      flywheel;
+    private VoltageSensor voltageSensor;
+    private double        targetRPM = 0.0;
 
     private static final double STEP_COARSE = 100.0;
     private static final double STEP_FINE   = 10.0;
 
     @Override
     public void init() {
-        flywheel = new Flywheel(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 
     @Override
@@ -32,6 +35,7 @@ public class FlywheelSpeedTest extends OpMode {
         if (gamepad1.aWasPressed()) flywheel.setRPM(targetRPM);
         if (gamepad1.bWasPressed()) flywheel.stop();
 
+        voltageSensor.update();
         flywheel.update();
 
         telemetry.addLine("Flywheel Speed Test");
@@ -39,6 +43,7 @@ public class FlywheelSpeedTest extends OpMode {
         telemetry.addData("current RPM", "%.1f", flywheel.getRPM());
         telemetry.addData("state",       flywheel.getState());
         telemetry.addData("at speed",    flywheel.isAtSpeed());
+        telemetry.addData("voltage",     "%.4f", voltageSensor.getVoltage());
         telemetry.addLine("DPAD UP/DOWN = ±100 RPM | DPAD RIGHT/LEFT = ±10 RPM | A = go | B = stop");
         telemetry.update();
     }

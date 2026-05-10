@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 /**
  * Manual TeleOp — controls all subsystems directly without managers or Pedro Pathing.
@@ -21,22 +22,21 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
  *
  * Controls:
  * Gamepad1:
- * - Left stick    — strafe / drive
- * - Right stick X — rotate
- * - Share         — toggle field centric / robot centric
+ * - Left stick      — strafe / drive
+ * - Right stick X   — rotate
+ * - Share           — toggle field centric / robot centric
+ * - Right trigger   — intake (held)
+ * - Left trigger    — indexer pull (held)
+ * - Right bumper    — deflector position +0.01
+ * - Left bumper     — deflector position -0.01
+ * - X               — stopper open
+ * - Y               — stopper close
  *
  * Gamepad2:
- * - Right trigger  — intake (held)
- * - A              — deflector open
- * - B              — deflector close
- * - X              — stopper open
- * - Y              — stopper close
- * - Right bumper   — deflector open
- * - Left bumper    — deflector close
- * - DPAD RIGHT     — turret +5°
- * - DPAD LEFT      — turret -5°
- * - DPAD UP        — flywheel speed +100 RPM
- * - DPAD DOWN      — flywheel speed -100 RPM
+ * - DPAD RIGHT      — turret +5°
+ * - DPAD LEFT       — turret -5°
+ * - DPAD UP         — flywheel speed +100 RPM
+ * - DPAD DOWN       — flywheel speed -100 RPM
  */
 @TeleOp(name = "Manual TeleOp", group = "production")
 public class ManualTeleOp extends OpMode {
@@ -47,20 +47,21 @@ public class ManualTeleOp extends OpMode {
     private DcMotorEx backRight;
     private IMU       imu;
 
-    private Intake    intake;
-    private Indexer   indexer;
-    private Deflector deflector;
-    private Stopper   stopper;
-    private Turret    turret;
-    private Flywheel  flywheel;
+    private VoltageSensor voltageSensor;
+    private Intake        intake;
+    private Indexer       indexer;
+    private Deflector     deflector;
+    private Stopper       stopper;
+    private Turret        turret;
+    private Flywheel      flywheel;
 
-    private boolean fieldCentric  = true;
-    private double  turretAngle   = 0.0;
-    private double  flywheelSpeed = 0.0;
-    private double  deflectorAngle = SubsystemsConfig.Deflector.IDLE_POSITION;
+    private boolean fieldCentric   = true;
+    private double  turretAngle    = 0.0;
+    private double  flywheelSpeed  = 0.0;
+    private double  deflectorPos   = SubsystemsConfig.Deflector.IDLE_POSITION;
 
-    private static final double TURRET_STEP   = 5.0;   // degrees per press
-    private static final double FLYWHEEL_STEP = 100.0; // RPM per press
+    private static final double TURRET_STEP    = 5.0;
+    private static final double FLYWHEEL_STEP  = 100.0;
     private static final double DEFLECTOR_STEP = 0.01;
 
     @Override
@@ -86,25 +87,23 @@ public class ManualTeleOp extends OpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // imu for field centric
         imu = hardwareMap.get(IMU.class, "imu");
 
         // subsystems
-        intake    = new Intake(hardwareMap);
-        indexer   = new Indexer(hardwareMap);
-        deflector = new Deflector(hardwareMap);
-        stopper   = new Stopper(hardwareMap);
-        turret    = new Turret(hardwareMap);
-        flywheel  = new Flywheel(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        intake        = new Intake(hardwareMap);
+        indexer       = new Indexer(hardwareMap);
+        deflector     = new Deflector(hardwareMap);
+        stopper       = new Stopper(hardwareMap);
+        turret        = new Turret(hardwareMap, voltageSensor);
+        flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 
     @Override
     public void loop() {
 
         // toggle field centric / robot centric
-        if (gamepad1.shareWasPressed()) {
-            fieldCentric = !fieldCentric;
-        }
+        if (gamepad1.shareWasPressed()) fieldCentric = !fieldCentric;
 
         // driving
         double y  = -gamepad1.left_stick_y;
@@ -117,28 +116,31 @@ public class ManualTeleOp extends OpMode {
             double rotY    =  x * Math.sin(-heading) + y * Math.cos(-heading);
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            frontLeft.setPower((rotY + rotX + rx) / denominator);
+            frontLeft.setPower((rotY + rotX + rx)  / denominator);
             frontRight.setPower((rotY - rotX - rx) / denominator);
-            backLeft.setPower((rotY - rotX + rx) / denominator);
-            backRight.setPower((rotY + rotX - rx) / denominator);
+            backLeft.setPower((rotY - rotX + rx)   / denominator);
+            backRight.setPower((rotY + rotX - rx)  / denominator);
         } else {
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            frontLeft.setPower((y + x + rx) / denominator);
+            frontLeft.setPower((y + x + rx)  / denominator);
             frontRight.setPower((y - x - rx) / denominator);
-            backLeft.setPower((y - x + rx) / denominator);
-            backRight.setPower((y + x - rx) / denominator);
+            backLeft.setPower((y - x + rx)   / denominator);
+            backRight.setPower((y + x - rx)  / denominator);
         }
 
         // intake — held
         if (gamepad1.right_trigger > 0.1) intake.pull();
         else                              intake.idle();
 
+        // indexer — held
         if (gamepad1.left_trigger > 0.1) indexer.pull();
-        else                             indexer.push();
+        else                             indexer.idle();
 
-        if (gamepad1.rightBumperWasPressed()) deflectorAngle += DEFLECTOR_STEP;
-        else                                  deflectorAngle -= DEFLECTOR_STEP;
-        deflector.setPosition(deflectorAngle);
+        // deflector — increment/decrement position
+        if (gamepad1.rightBumperWasPressed()) deflectorPos += DEFLECTOR_STEP;
+        if (gamepad1.leftBumperWasPressed())  deflectorPos -= DEFLECTOR_STEP;
+        deflectorPos = Math.max(0.0, Math.min(1.0, deflectorPos));
+        deflector.setPosition(deflectorPos);
 
         // stopper
         if (gamepad1.xWasPressed()) stopper.open();
@@ -156,6 +158,7 @@ public class ManualTeleOp extends OpMode {
         flywheel.setRPM(flywheelSpeed);
 
         // update subsystems
+        voltageSensor.update();
         intake.update();
         indexer.update();
         deflector.update();
@@ -167,11 +170,14 @@ public class ManualTeleOp extends OpMode {
         telemetry.addData("mode",           fieldCentric ? "field centric" : "robot centric");
         telemetry.addData("turret angle",   turretAngle);
         telemetry.addData("flywheel RPM",   flywheelSpeed);
+        telemetry.addData("deflector pos",  deflectorPos);
         telemetry.addData("deflector",      deflector.getState());
         telemetry.addData("stopper",        stopper.getState());
         telemetry.addData("intake",         intake.getState());
+        telemetry.addData("indexer",        indexer.getState());
         telemetry.addData("flywheel state", flywheel.getState());
         telemetry.addData("turret state",   turret.getState());
+        telemetry.addData("voltage",        voltageSensor.getVoltage());
         telemetry.update();
     }
 }

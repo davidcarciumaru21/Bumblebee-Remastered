@@ -4,10 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Turret Min Power Tuner", group = "Turret")
 public class TurretMinPowerTuner extends OpMode {
 
+    private VoltageSensor voltageSensor;
     private Turret turret;
 
     private double currentPower = 0.0;
@@ -17,7 +19,8 @@ public class TurretMinPowerTuner extends OpMode {
 
     @Override
     public void init() {
-        turret = new Turret(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        turret = new Turret(hardwareMap, voltageSensor);
     }
 
     @Override
@@ -35,12 +38,12 @@ public class TurretMinPowerTuner extends OpMode {
         turret.update();
 
         // MIN_POWER_VOLTS = currentPower * filteredVoltage
-        double minPowerVolts = currentPower * turret.getFilteredVoltage();
+        double minPowerVolts = currentPower * voltageSensor.getVoltage();
 
         telemetry.addLine("Turret Min Power Tuner");
         telemetry.addLine("Increase power until turret starts moving — copy MIN_POWER_VOLTS to SubsystemsConfig.Turret.MIN_POWER_VOLTS");
         telemetry.addData("current power",    "%.4f", currentPower);
-        telemetry.addData("voltage",          "%.4f", turret.getFilteredVoltage());
+        telemetry.addData("voltage",          "%.4f", voltageSensor.getVoltage());
         telemetry.addData("MIN_POWER_VOLTS",  "%.4f", minPowerVolts);
         telemetry.addData("angle (deg)",      "%.2f",  turret.getCurrentAngle());
         telemetry.addData("encoder ticks",    turret.getEncoderTicks());

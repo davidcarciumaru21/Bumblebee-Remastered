@@ -6,12 +6,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
 @TeleOp(name = "Flywheel Ramp Test", group = "Flywheel")
 public class FlywheelRampTest extends OpMode {
 
-    private Flywheel flywheel;
-    private ElapsedTime totalTimer = new ElapsedTime();
+    private Flywheel      flywheel;
+    private VoltageSensor voltageSensor;
+    private ElapsedTime   totalTimer = new ElapsedTime();
 
     private static final double TARGET_RPM = 3000;
 
@@ -20,7 +22,8 @@ public class FlywheelRampTest extends OpMode {
 
     @Override
     public void init() {
-        flywheel = new Flywheel(hardwareMap);
+        voltageSensor = new VoltageSensor(hardwareMap);
+        flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 
     @Override
@@ -33,6 +36,7 @@ public class FlywheelRampTest extends OpMode {
 
     @Override
     public void loop() {
+        voltageSensor.update();
         flywheel.update();
 
         double rpm = flywheel.getRPM();
@@ -48,6 +52,7 @@ public class FlywheelRampTest extends OpMode {
         telemetry.addData("state",            flywheel.getState());
         telemetry.addData("reached speed",    reachedSpeed);
         telemetry.addData("time to speed ms", "%.1f", timeToSpeedMs);
+        telemetry.addData("voltage",          "%.4f", voltageSensor.getVoltage());
         telemetry.update();
     }
 

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
@@ -28,6 +27,8 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
  *
  * 4. When the error is within the dead zone threshold, power is set to 0.
  *
+ * Voltage is provided externally via {@link VoltageSensor}, updated once per loop.
+ *
  * State machine:
  * - IDLE      — turret holds at idle power (configurable)
  * - GOING_TO  — turret is actively moving toward target angle
@@ -35,19 +36,18 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
  */
 public class Turret implements Subsystem {
 
-    private final CRServo       turret;
-    private final DcMotorEx     encoder;
-    private final VoltageSensor voltageSensor;
+    private final CRServo        turret;
+    private final DcMotorEx      encoder;
+    private final VoltageSensor  voltageSensor;
 
-    private TurretState state          = TurretState.IDLE;
-    private double      targetAngle    = 0.0;
-    private double      filteredVoltage = SubsystemsConfig.VoltageSensor.INITIAL_FILTERED_VOLTAGE;
+    private TurretState state       = TurretState.IDLE;
+    private double      targetAngle = 0.0;
 
     // tunable live — initialized from config, can be overridden by tuners
     private double brakeDistance = SubsystemsConfig.Turret.BRAKE_DISTANCE;
     private double deadZone      = SubsystemsConfig.Turret.DEAD_ZONE;
 
-    public Turret(HardwareMap hardwareMap) {
+    public Turret(HardwareMap hardwareMap, VoltageSensor voltageSensor) {
         this.turret = hardwareMap.get(CRServo.class, SubsystemsConfig.Turret.SERVO_NAME);
         this.turret.setDirection(CRServo.Direction.REVERSE);
 
@@ -55,7 +55,7 @@ public class Turret implements Subsystem {
         this.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        this.voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        this.voltageSensor = voltageSensor;
     }
 
     /**
@@ -109,9 +109,6 @@ public class Turret implements Subsystem {
     /** Returns the raw encoder ticks. Useful for verifying encoder direction. */
     public int getEncoderTicks() { return this.encoder.getCurrentPosition(); }
 
-    /** Returns the current filtered voltage. */
-    public double getFilteredVoltage() { return this.filteredVoltage; }
-
     /**
      * Quadratic speed profile function.
      * Produces a smooth speed curve: fast when far, slow when close.
@@ -136,11 +133,8 @@ public class Turret implements Subsystem {
     @Override
     public void update() {
 
-        filteredVoltage += SubsystemsConfig.VoltageSensor.VOLTAGE_ALPHA
-                * (voltageSensor.getVoltage() - filteredVoltage);
-
-        // convert MIN_POWER_VOLTS to raw power based on current voltage
-        double minPower = SubsystemsConfig.Turret.MIN_POWER_VOLTS / filteredVoltage;
+        // convert MIN_POWER_VOLTS to raw power based on current filtered voltage
+        double minPower = SubsystemsConfig.Turret.MIN_POWER_VOLTS / voltageSensor.getVoltage();
 
         switch (state) {
             case IDLE:
