@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.IndexerState;
 
 /**

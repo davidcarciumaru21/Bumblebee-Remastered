@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOps.tuners;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
 
 /**

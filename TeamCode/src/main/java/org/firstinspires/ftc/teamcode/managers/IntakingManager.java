@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.managers;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.IntakingManagerState;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;

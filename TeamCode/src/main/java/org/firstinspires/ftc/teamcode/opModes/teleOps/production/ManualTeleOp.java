@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.global.constants.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
@@ -67,15 +67,15 @@ public class ManualTeleOp extends OpMode {
     @Override
     public void init() {
         // drivetrain
-        frontLeft  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR);
-        frontRight = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FRONT_RIGHT_MOTOR);
-        backLeft   = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_LEFT_MOTOR);
-        backRight  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_RIGHT_MOTOR);
+        frontLeft  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR_NAME);
+        backLeft   = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_LEFT_MOTOR_NAME);
+        frontRight = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FORNT_RIGHT_MOTOR_NAME);
+        backRight  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_RIGHT_MOTOR_NAME);
 
-        frontLeft.setDirection(SubsystemsConfig.Drivetrain.FRONT_LEFT_DIRECTION);
-        frontRight.setDirection(SubsystemsConfig.Drivetrain.FRONT_RIGHT_DIRECTION);
-        backLeft.setDirection(SubsystemsConfig.Drivetrain.BACK_LEFT_DIRECTION);
-        backRight.setDirection(SubsystemsConfig.Drivetrain.BACK_RIGHT_DIRECTION);
+        frontLeft.setDirection(SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR_DIRECTION);
+        backLeft.setDirection(SubsystemsConfig.Drivetrain.BACK_LEFT_MOTOR_DIRECTION);
+        frontRight.setDirection(SubsystemsConfig.Drivetrain.FRONT_RIGHT_MOTOR_DIRECTION);
+        backRight.setDirection(SubsystemsConfig.Drivetrain.BACK_RIGHT_MOTOR_DIRECTION);
 
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

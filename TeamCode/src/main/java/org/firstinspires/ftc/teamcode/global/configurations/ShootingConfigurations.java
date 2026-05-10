@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.global.constants;
+package org.firstinspires.ftc.teamcode.global.configurations;
 
 /**
  * Ballistic shooting constants.
@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.global.constants;
  * Modify SCORE_HEIGHT, SCORE_ANGLE and PASS_THROUGH_RADIUS per zone based on testing.
  * G is constant and shared across all zones.
  */
-public class ShootingConstants {
+public class ShootingConfigurations {
 
     /** Gravitational acceleration in in/s². Constant, do not modify. */
     public static final double G = 386.1;

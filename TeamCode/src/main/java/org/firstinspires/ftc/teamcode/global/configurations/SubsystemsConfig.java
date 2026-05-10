@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode.global.constants;
+package org.firstinspires.ftc.teamcode.global.configurations;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.pedropathing.ftc.localization.Encoder;
 
 /**
  * Hardware constants for all subsystems.
@@ -148,19 +150,70 @@ public class SubsystemsConfig {
 
     /**
      * Drivetrain motor constants.
-     * Mecanum drive — 4 motors.
-     * Directions set for standard mecanum configuration.
+     * Used by both ManualTeleOp and Pedro Pathing.
+     * LEFT_FRONT_MOTOR_NAME       — hardware map name for the front left motor.
+     * LEFT_REAR_MOTOR_NAME        — hardware map name for the rear left motor.
+     * RIGHT_FRONT_MOTOR_NAME      — hardware map name for the front right motor.
+     * RIGHT_REAR_MOTOR_NAME       — hardware map name for the rear right motor.
+     * LEFT_FRONT_MOTOR_DIRECTION  — direction of the front left motor.
+     * LEFT_REAR_MOTOR_DIRECTION   — direction of the rear left motor.
+     * RIGHT_FRONT_MOTOR_DIRECTION — direction of the front right motor.
+     * RIGHT_REAR_MOTOR_DIRECTION  — direction of the rear right motor.
+     * X_VELOCITY                  — maximum velocity in the x direction in inches/second. Tune with Pedro Pathing.
+     * Y_VELOCITY                  — maximum velocity in the y direction in inches/second. Tune with Pedro Pathing.
      */
-
     public static final class Drivetrain {
-        public static final String                  FRONT_LEFT_MOTOR  = "FrontLeft";
-        public static final String                  FRONT_RIGHT_MOTOR = "FrontRight";
-        public static final String                  BACK_LEFT_MOTOR   = "BackLeft";
-        public static final String                  BACK_RIGHT_MOTOR  = "BackRight";
+        public static final String                  FRONT_LEFT_MOTOR_NAME       = "FrontLeft";
+        public static final String                  BACK_LEFT_MOTOR_NAME        = "BackLeft";
+        public static final String                  FORNT_RIGHT_MOTOR_NAME      = "FrontRight";
+        public static final String                  BACK_RIGHT_MOTOR_NAME       = "BackRight";
+        public static final DcMotorSimple.Direction FRONT_LEFT_MOTOR_DIRECTION  = DcMotorSimple.Direction.REVERSE;
+        public static final DcMotorSimple.Direction BACK_LEFT_MOTOR_DIRECTION   = DcMotorSimple.Direction.REVERSE;
+        public static final DcMotorSimple.Direction FRONT_RIGHT_MOTOR_DIRECTION = DcMotorSimple.Direction.FORWARD;
+        public static final DcMotorSimple.Direction BACK_RIGHT_MOTOR_DIRECTION  = DcMotorSimple.Direction.FORWARD;
+        public static final double                  X_VELOCITY                  = 0;
+        public static final double                  Y_VELOCITY                  = 0;
+    }
 
-        public static final DcMotorSimple.Direction FRONT_LEFT_DIRECTION  = DcMotorSimple.Direction.REVERSE;
-        public static final DcMotorSimple.Direction FRONT_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction BACK_LEFT_DIRECTION   = DcMotorSimple.Direction.REVERSE;
-        public static final DcMotorSimple.Direction BACK_RIGHT_DIRECTION  = DcMotorSimple.Direction.FORWARD;
+    /**
+     * Localizer constants for Pedro Pathing.
+     * Uses three dead wheel odometry pods and IMU.
+     * LEFT_POD_Y                  — y offset of the left parallel pod in inches relative to robot center.
+     * RIGHT_POD_Y                 — y offset of the right parallel pod in inches relative to robot center.
+     * STRAFE_POD_X                — x offset of the strafe pod in inches relative to robot center.
+     * LEFT_ENCODER_NAME           — hardware map name of the motor port the left encoder is plugged into.
+     * RIGHT_ENCODER_NAME          — hardware map name of the motor port the right encoder is plugged into.
+     * STRAFE_ENCODER_NAME         — hardware map name of the motor port the strafe encoder is plugged into.
+     * LEFT_ENCODER_DIRECTION      — encoder direction for the left pod. Reverse if x decreases when moving forward.
+     * RIGHT_ENCODER_DIRECTION     — encoder direction for the right pod. Reverse if x decreases when moving forward.
+     * STRAFE_ENCODER_DIRECTION    — encoder direction for the strafe pod. Reverse if y decreases when moving left.
+     * FORWARD_TICKS_TO_INCHES     — multiplier converting encoder ticks to inches for forward movement. Tune with forward tuner.
+     * STRAFE_TICKS_TO_INCHES      — multiplier converting encoder ticks to inches for lateral movement. Tune with lateral tuner.
+     * TURN_TICKS_TO_INCHES        — multiplier converting encoder ticks to inches for rotation. Tune with turn tuner.
+     * IMU_HARDWARE_MAP_NAME       — hardware map name of the IMU.
+     * IMU_ORIENTATION             — orientation of the Control Hub on the robot.
+     */
+    public static final class Localizer {
+        public static final double LEFT_POD_Y               = 0.0;
+        public static final double RIGHT_POD_Y              = -0.0;
+        public static final double STRAFE_POD_X             = -0.5;
+
+        public static final String LEFT_ENCODER_NAME        = "leftFront";
+        public static final String RIGHT_ENCODER_NAME       = "rightRear";
+        public static final String STRAFE_ENCODER_NAME      = "rightFront";
+
+        public static final double LEFT_ENCODER_DIRECTION   = 1.0;
+        public static final double RIGHT_ENCODER_DIRECTION  = 1.0;
+        public static final double STRAFE_ENCODER_DIRECTION = 1.0;
+
+        public static final double FORWARD_TICKS_TO_INCHES  = 0.0; // TODO: tune with forward tuner
+        public static final double STRAFE_TICKS_TO_INCHES   = 0.0; // TODO: tune with lateral tuner
+        public static final double TURN_TICKS_TO_INCHES     = 0.0; // TODO: tune with turn tuner
+
+        public static final String IMU_HARDWARE_MAP_NAME    = "imu";
+        public static final RevHubOrientationOnRobot IMU_ORIENTATION = new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+        );
     }
 }
