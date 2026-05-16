@@ -202,9 +202,9 @@ public class SubsystemsConfig {
         public static final String RIGHT_ENCODER_NAME       = "rightRear";
         public static final String STRAFE_ENCODER_NAME      = "rightFront";
 
-        public static final double LEFT_ENCODER_DIRECTION   = 1.0;
-        public static final double RIGHT_ENCODER_DIRECTION  = 1.0;
-        public static final double STRAFE_ENCODER_DIRECTION = 1.0;
+        public static final double LEFT_ENCODER_DIRECTION   = Encoder.FORWARD;
+        public static final double RIGHT_ENCODER_DIRECTION  = Encoder.FORWARD;
+        public static final double STRAFE_ENCODER_DIRECTION = Encoder.FORWARD;
 
         public static final double FORWARD_TICKS_TO_INCHES  = 0.0; // TODO: tune with forward tuner
         public static final double STRAFE_TICKS_TO_INCHES   = 0.0; // TODO: tune with lateral tuner

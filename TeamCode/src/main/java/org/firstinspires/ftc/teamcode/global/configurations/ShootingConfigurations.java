@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.global.configurations;
 
+import com.pedropathing.geometry.Pose;
+
 /**
  * Ballistic shooting constants.
  * Each inner class corresponds to a distance zone.
@@ -52,5 +54,17 @@ public class ShootingConfigurations {
         public static final double SCORE_HEIGHT        = 24.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 15.0;
+    }
+
+    /**
+     * Goal positions on the field for each alliance.
+     * RED_GOAL_POSE  — position of the goal on the red alliance side.
+     * BLUE_GOAL_POSE — position of the goal on the blue alliance side, mirrored from red.
+     * Coordinates are in inches, origin at bottom-left corner of the field.
+     * Modify these values if the goal position changes between seasons.
+     */
+    public static final class Goals {
+        public static final Pose RED_GOAL_POSE  = new Pose(133, 139);
+        public static final Pose BLUE_GOAL_POSE = new Pose(133, 139).mirror();
     }
 }

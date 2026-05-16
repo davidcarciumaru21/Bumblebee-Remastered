@@ -55,7 +55,7 @@ public class ManualTeleOp extends OpMode {
     private Turret        turret;
     private Flywheel      flywheel;
 
-    private boolean fieldCentric   = true;
+    private boolean fieldCentric   = false;
     private double  turretAngle    = 0.0;
     private double  flywheelSpeed  = 0.0;
     private double  deflectorPos   = SubsystemsConfig.Deflector.IDLE_POSITION;
@@ -147,13 +147,13 @@ public class ManualTeleOp extends OpMode {
         if (gamepad1.yWasPressed()) stopper.close();
 
         // turret
-        if (gamepad2.dpadRightWasPressed()) turretAngle += TURRET_STEP;
-        if (gamepad2.dpadLeftWasPressed())  turretAngle -= TURRET_STEP;
+        if (gamepad1.dpadRightWasPressed()) turretAngle += TURRET_STEP;
+        if (gamepad1.dpadLeftWasPressed())  turretAngle -= TURRET_STEP;
         turret.setTargetAngle(turretAngle);
 
         // flywheel
-        if (gamepad2.dpadUpWasPressed())   flywheelSpeed += FLYWHEEL_STEP;
-        if (gamepad2.dpadDownWasPressed()) flywheelSpeed -= FLYWHEEL_STEP;
+        if (gamepad1.dpadUpWasPressed())   flywheelSpeed += FLYWHEEL_STEP;
+        if (gamepad1.dpadDownWasPressed()) flywheelSpeed -= FLYWHEEL_STEP;
         flywheelSpeed = Math.max(0.0, flywheelSpeed);
         flywheel.setRPM(flywheelSpeed);
 
