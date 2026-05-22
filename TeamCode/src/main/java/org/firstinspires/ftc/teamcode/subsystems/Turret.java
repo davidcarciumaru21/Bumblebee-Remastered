@@ -160,7 +160,8 @@ public class Turret implements Subsystem {
                 break;
 
             case AT_PLACE:
-                turret.setPower(0.0);
+                turret.setPower(SubsystemsConfig.Turret.IDLE_POWER);
+                state = TurretState.IDLE;
                 break;
         }
     }

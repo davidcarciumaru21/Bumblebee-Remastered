@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
 
-@TeleOp(name = "Turret go to position TeleOp", group = "Turret")
+@TeleOp(name = "Turret go to position Test", group = "Turret")
 public class TurretGoToPositionTest extends OpMode {
 
     private VoltageSensor voltageSensor;

@@ -23,6 +23,8 @@ public class TurretMinPowerTuner extends OpMode {
         turret = new Turret(hardwareMap, voltageSensor);
     }
 
+    private double lastPower = -1.0;
+
     @Override
     public void loop() {
 
@@ -34,19 +36,19 @@ public class TurretMinPowerTuner extends OpMode {
 
         currentPower = Math.max(0.0, Math.min(1.0, currentPower));
 
-        turret.setRawPower(currentPower);
-        turret.update();
+        if (currentPower != lastPower) {
+            turret.setRawPower(currentPower);
+            lastPower = currentPower;
+        }
 
-        // MIN_POWER_VOLTS = currentPower * filteredVoltage
+        voltageSensor.update();
+
         double minPowerVolts = currentPower * voltageSensor.getVoltage();
 
         telemetry.addLine("Turret Min Power Tuner");
         telemetry.addLine("Increase power until turret starts moving — copy MIN_POWER_VOLTS to SubsystemsConfig.Turret.MIN_POWER_VOLTS");
-        telemetry.addData("current power",    "%.4f", currentPower);
-        telemetry.addData("voltage",          "%.4f", voltageSensor.getVoltage());
-        telemetry.addData("MIN_POWER_VOLTS",  "%.4f", minPowerVolts);
-        telemetry.addData("angle (deg)",      "%.2f",  turret.getCurrentAngle());
-        telemetry.addData("encoder ticks",    turret.getEncoderTicks());
+        telemetry.addData("voltage",         "%.4f", voltageSensor.getVoltage());
+        telemetry.addData("MIN_POWER_VOLTS", "%.4f", minPowerVolts);
         telemetry.addLine("DPAD UP/DOWN = ±0.01 | bumpers = ±0.001 | Y = reset");
         telemetry.update();
     }
