@@ -11,6 +11,8 @@ public class TurretGoToPositionTest extends OpMode {
 
     private VoltageSensor voltageSensor;
     private Turret Turret;
+    private int targetAngle = 45;
+    private int STEP = 5;
 
     @Override
     public void init() {
@@ -20,11 +22,16 @@ public class TurretGoToPositionTest extends OpMode {
 
     @Override
     public void loop() {
-        Turret.setTargetAngle(45);
+
+        if (gamepad1.dpadUpWasPressed()) targetAngle += STEP;
+        if (gamepad1.dpadDownWasPressed()) targetAngle -= STEP;
+
+        Turret.setTargetAngle(targetAngle);
         Turret.update();
 
         telemetry.addData("state",    Turret.getState());
         telemetry.addData("position", Turret.getCurrentAngle());
+        telemetry.addData("targetAngle", targetAngle);
         telemetry.update();
     }
 }

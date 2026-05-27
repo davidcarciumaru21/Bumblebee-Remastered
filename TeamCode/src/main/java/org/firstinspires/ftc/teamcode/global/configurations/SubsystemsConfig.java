@@ -140,12 +140,12 @@ public class SubsystemsConfig {
         public static final String ENCODER_NAME = "FrontRight";
         public static final double TICKS_PER_REV = 8192.0;
         public static final double GEAR_RATIO = 5.714;
-        public static final double MIN_ANGLE = -120.0;
-        public static final double MAX_ANGLE = 80.0;
-        public static final double BRAKE_DISTANCE = 80.0;
+        public static final double MIN_ANGLE = -90.0;
+        public static final double MAX_ANGLE = 70.0;
+        public static final double BRAKE_DISTANCE = 100.0;
         public static final double DEAD_ZONE = 1.0;
-        public static final double MIN_POWER_VOLTS = 0.87;
-        public static final double IDLE_POWER = 0.7;
+        public static final double MIN_POWER_VOLTS = 0.90;
+        public static final double IDLE_POWER = -1.0;
     }
 
     /**
