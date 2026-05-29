@@ -95,7 +95,7 @@ public class ManualTeleOp extends OpMode {
         indexer       = new Indexer(hardwareMap);
         deflector     = new Deflector(hardwareMap);
         stopper       = new Stopper(hardwareMap);
-        turret        = new Turret(hardwareMap, voltageSensor);
+        turret        = new Turret(hardwareMap);
         flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 

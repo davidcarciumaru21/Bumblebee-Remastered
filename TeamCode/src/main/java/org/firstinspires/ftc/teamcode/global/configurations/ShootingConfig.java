@@ -64,7 +64,7 @@ public class ShootingConfig {
      * Modify these values if the goal position changes between seasons.
      */
     public static final class Goals {
-        public static final Pose RED_GOAL_POSE  = new Pose(133, 139);
-        public static final Pose BLUE_GOAL_POSE = new Pose(133, 139).mirror();
+        public static final Pose RED_GOAL_POSE  = new Pose(138, 138);
+        public static final Pose BLUE_GOAL_POSE = new Pose(138, 138).mirror();
     }
 }

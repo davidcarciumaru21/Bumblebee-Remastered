@@ -64,7 +64,7 @@ public class Robot {
         stopper       = new Stopper(hardwareMap);
         deflector     = new Deflector(hardwareMap);
         flywheel      = new Flywheel(hardwareMap, voltageSensor);
-        turret        = new Turret(hardwareMap, voltageSensor);
+        turret        = new Turret(hardwareMap);
 
         // follower
         follower = Constants.createFollower(hardwareMap);
@@ -159,9 +159,10 @@ public class Robot {
 
     // --- getters ---
 
-    public AllianceColor getAllianceColor() { return allianceColor; }
-    public Follower      getFollower()      { return follower; }
-    public Pose          getGoalPose()      { return goalPose; }
+    public AllianceColor getAllianceColor()     { return allianceColor; }
+    public Follower      getFollower()          { return follower; }
+    public Pose          getGoalPose()          { return goalPose; }
+    public double        getTargetTurretAngle() { return turret.getTargetAngle(); }
 
     /**
      * Updates all subsystems and managers.
@@ -175,12 +176,26 @@ public class Robot {
         follower.update();
 
         // calculate distance and angle to goal
-        Pose   currentPose  = follower.getPose();
-        double distance     = currentPose.distanceFrom(goalPose);
-        double angleToGoal  = Math.atan2(
+        // calculate distance and angle to goal
+        Pose currentPose = follower.getPose();
+
+        double distance = currentPose.distanceFrom(goalPose);
+
+        // global field angle
+        double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()
         );
+
+        // robot-relative angle
+        double angleToGoal = globalAngleToGoal - currentPose.getHeading();
+
+        // normalize to [-PI, PI]
+        angleToGoal = Math.atan2(
+                Math.sin(angleToGoal),
+                Math.cos(angleToGoal)
+        );
+
         Vector velocityVector = follower.poseTracker.getVelocity();
 
         // update managers

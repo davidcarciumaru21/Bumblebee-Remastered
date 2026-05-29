@@ -149,7 +149,9 @@ public class ShootingManager {
                                 (newDistance * Math.tan(newAngle) - height))
         );
 
-        double turretAngle = angleToGoal + Math.atan(tangentialComponent / vxCompensated);
+        double turretOffset = Math.atan2(tangentialComponent, vxCompensated);
+        double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
+                Math.cos(angleToGoal + turretOffset));
 
         if (Double.isNaN(newAngle) || Double.isNaN(newV0)) {
             deflector.setAngleInRadians(SubsystemsConfig.Deflector.MIN_ANGLE);
@@ -173,7 +175,7 @@ public class ShootingManager {
         // calculate and apply targets constantly regardless of state
         Pair<Double, Double> targets = getTargetAngleAndVelocity(distance, velocityVector, angleToGoal);
 
-        turret.setTargetAngle(Math.toDegrees(targets.first));
+        turret.setTargetAngle(-Math.toDegrees(targets.first));
         flywheel.setSpeedInchesPerSecond(targets.second);
 
         // update subsystems

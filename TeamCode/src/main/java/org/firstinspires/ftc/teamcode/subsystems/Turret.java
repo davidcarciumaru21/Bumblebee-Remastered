@@ -1,168 +1,80 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
+import org.firstinspires.ftc.teamcode.utils.MathUtils;
 
 /**
- * Controls the turret CRServo using a quadratic speed profile (twoXSqrd).
+ * Controls the turret servo using a linear regression to convert angle to servo position.
+ * The servo supports 5 full turns, allowing precise positioning.
  *
- * <p>Algorithm explanation:
- * Instead of a PD controller, the turret uses a quadratic interpolation approach:
- *
- * 1. The angular error (deltaAngle) is normalized by a brake distance constant,
- *    producing an interpolator value between -1 and 1.
- *
- * 2. This interpolator is fed into twoXSqrd(x, vMin):
- *    - Computes x² as the raw speed, preserving the sign of x.
- *    - If x² is below vMin, returns vMin to prevent stalling near the target.
- *    - If x² exceeds 1.0, clamps to 1.0 to prevent overflow.
- *    - Otherwise returns x² with the correct sign.
- *
- * 3. The result is a smooth speed curve: fast when far, slow when close,
- *    with a guaranteed minimum power to overcome friction.
- *
- * 4. When the error is within the dead zone threshold, power is set to 0.
- *
- * Voltage is provided externally via {@link VoltageSensor}, updated once per loop.
+ * <p>Regression: position = SCALE * angle + OFFSET
+ * Tune SCALE and OFFSET with TurretTuner.
  *
  * State machine:
- * - IDLE      — turret holds at idle power (configurable)
- * - GOING_TO  — turret is actively moving toward target angle
- * - AT_PLACE  — turret has reached target angle within dead zone
+ * - IDLE        — turret holds at center position (0.5)
+ * - AT_POSITION — turret holds at a custom target angle
  */
 public class Turret implements Subsystem {
 
-    private final CRServo        turret;
-    private final DcMotorEx      encoder;
-    private final VoltageSensor  voltageSensor;
+    private final Servo turret;
 
-    private TurretState state       = TurretState.IDLE;
-    private double      targetAngle = 0.0;
+    private TurretState state          = TurretState.IDLE;
+    private double      targetPosition = 0.5;
 
-    // tunable live — initialized from config, can be overridden by tuners
-    private double brakeDistance = SubsystemsConfig.Turret.BRAKE_DISTANCE;
-    private double deadZone      = SubsystemsConfig.Turret.DEAD_ZONE;
+    // linear regression constants — tune with TurretTuner
+    private static final double SCALE  = 0.00183333;
+    private static final double OFFSET = 0.5;
 
-    public Turret(HardwareMap hardwareMap, VoltageSensor voltageSensor) {
-        this.turret = hardwareMap.get(CRServo.class, SubsystemsConfig.Turret.SERVO_NAME);
-        this.turret.setDirection(CRServo.Direction.REVERSE);
-
-        this.encoder = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Turret.ENCODER_NAME);
-        this.encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        this.encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
-        this.voltageSensor = voltageSensor;
+    public Turret(HardwareMap hardwareMap) {
+        this.turret = hardwareMap.get(Servo.class, SubsystemsConfig.Turret.SERVO_NAME);
+        this.turret.setPosition(0.5);
     }
 
     /**
-     * Sets the target angle and transitions to GOING_TO state.
+     * Sets the target angle in degrees and transitions to AT_POSITION.
      * Angle is clamped to the configured min/max range.
      * @param angle target angle in degrees
      */
     public void setTargetAngle(double angle) {
-        this.targetAngle = Math.max(
+        angle = Math.max(
                 SubsystemsConfig.Turret.MIN_ANGLE,
                 Math.min(SubsystemsConfig.Turret.MAX_ANGLE, angle)
         );
-        this.state = TurretState.GOING_TO;
+        this.targetPosition = MathUtils.clamp(
+                SCALE * angle + OFFSET,
+                0.0,
+                1.0
+        );
+        this.state = TurretState.AT_POSITION;
     }
 
-    /** Stops the turret and transitions to IDLE state. */
-    public void idle() { this.state = TurretState.IDLE; }
+    /** Returns turret to center position (0.5). */
+    public void idle() {
+        this.targetPosition = 0.5;
+        this.state          = TurretState.IDLE;
+    }
 
-    /** Directly sets raw power to the CRServo. Use only for testing. */
-    public void setRawPower(double power) { this.turret.setPower(power); }
-
-    /**
-     * Sets the brake distance live. Use only for tuning.
-     * @param brakeDistance angular distance in degrees at which deceleration begins
-     */
-    public void setBrakeDistance(double brakeDistance) { this.brakeDistance = brakeDistance; }
-
-    /**
-     * Sets the dead zone live. Use only for tuning.
-     * @param deadZone angular error in degrees below which turret is considered at target
-     */
-    public void setDeadZone(double deadZone) { this.deadZone = deadZone; }
-
-    /** Returns true if the turret has reached its target angle. */
-    public boolean isAtPlace() { return this.state == TurretState.AT_PLACE; }
+    /** Returns true if turret is at a custom position. */
+    public boolean isAtPosition() { return this.state == TurretState.AT_POSITION; }
 
     /** Returns the current state of the turret. */
     public TurretState getState() { return this.state; }
 
-    /** Returns the current angle of the turret in degrees. */
-    public double getCurrentAngle() {
-        return (double) encoder.getCurrentPosition()
-                / SubsystemsConfig.Turret.GEAR_RATIO
-                / SubsystemsConfig.Turret.TICKS_PER_REV
-                * 360.0;
-    }
-
     /** Returns the current target angle in degrees. */
-    public double getTargetAngle() { return this.targetAngle; }
-
-    /** Returns the raw encoder ticks. Useful for verifying encoder direction. */
-    public int getEncoderTicks() { return this.encoder.getCurrentPosition(); }
-
-    /**
-     * Quadratic speed profile function.
-     * Produces a smooth speed curve: fast when far, slow when close.
-     * Guarantees a minimum power (vMin) to prevent stalling near the target.
-     *
-     * @param x     normalized error, between -1.0 and 1.0
-     * @param vMin  minimum output power to overcome friction
-     * @return      signed speed between -1.0 and 1.0
-     */
-    private double twoXSqrd(double x, double vMin) {
-        if (x == 0) return 0;
-
-        double speed = x * x;
-        double sign  = x / Math.abs(x);
-
-        if (vMin > Math.abs(speed))   return vMin * sign;
-        else if (Math.abs(speed) > 1) return sign;
-        else                          return speed * sign;
+    public double getTargetAngle() {
+        return (targetPosition - OFFSET) / SCALE;
     }
 
-    /** Applies the staged control to hardware. Must be called every loop. */
+    /** Returns the current target servo position. */
+    public double getTargetPosition() { return this.targetPosition; }
+
+    /** Applies the staged position to hardware. Must be called every loop. */
     @Override
     public void update() {
-
-        // convert MIN_POWER_VOLTS to raw power based on current filtered voltage
-        double minPower = SubsystemsConfig.Turret.MIN_POWER_VOLTS / voltageSensor.getVoltage();
-
-        switch (state) {
-            case IDLE:
-                turret.setPower(SubsystemsConfig.Turret.IDLE_POWER);
-                break;
-
-            case GOING_TO:
-                double deltaAngle   = targetAngle - getCurrentAngle();
-                double interpolator = deltaAngle / this.brakeDistance;
-
-                // clamp interpolator to [-1, 1]
-                if (Math.abs(interpolator) > 1)
-                    interpolator = interpolator / Math.abs(interpolator);
-
-                double speed = twoXSqrd(interpolator, minPower);
-
-                if (Math.abs(deltaAngle) < this.deadZone) {
-                    turret.setPower(0.0);
-                    state = TurretState.AT_PLACE;
-                } else {
-                    turret.setPower(speed);
-                }
-                break;
-
-            case AT_PLACE:
-                turret.setPower(SubsystemsConfig.Turret.IDLE_POWER);
-                state = TurretState.IDLE;
-                break;
-        }
+        this.turret.setPosition(this.targetPosition);
     }
 }

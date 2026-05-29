@@ -58,9 +58,18 @@ public class MainTeleOp extends OpMode {
         );
 
         // intake
-        if (gamepad1.right_trigger > 0.1)      robot.feed();
-        else if (gamepad1.left_trigger > 0.1)  robot.eject();
-        else                                    robot.stopFeed();
+        if (!robot.isShooting()) {
+
+            if (gamepad1.right_trigger > 0.1) {
+                robot.feed();
+
+            } else if (gamepad1.left_trigger > 0.1) {
+                robot.eject();
+
+            } else {
+                robot.stopFeed();
+            }
+        }
 
         // shooting
         if (gamepad1.rightBumperWasPressed())  robot.shoot();
@@ -78,6 +87,7 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("pose y",     "%.2f", robot.getFollower().getPose().getY());
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));
         telemetry.addData("distance",   "%.2f in", robot.getFollower().getPose().distanceFrom(robot.getGoalPose()));
+        telemetry.addData("target angle", "%.2f", robot.getTargetTurretAngle());
         telemetry.update();
     }
 }

@@ -54,7 +54,7 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER = 1.0;
         public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.4;
+        public static final double                  IDLE_POWER = 0.2;
     }
 
     /**
@@ -124,28 +124,18 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Turret CRServo constants.
-     * Responsible for rotating the turret toward a target angle using a quadratic speed profile.
-     * TICKS_PER_REV   — encoder ticks per revolution. Specific to encoder model.
-     * GEAR_RATIO      — gear ratio between encoder and turret output shaft.
-     * MIN_ANGLE       — minimum allowed turret angle in degrees.
-     * MAX_ANGLE       — maximum allowed turret angle in degrees.
-     * BRAKE_DISTANCE  — angular distance in degrees at which deceleration begins.
-     * DEAD_ZONE       — angular error in degrees below which turret is considered at target.
-     * MIN_POWER_VOLTS — minimum voltage needed to overcome static friction. Tune with TurretMinPowerTuner.
-     * IDLE_POWER      — power applied when turret is idle.
+     * Turret servo constants.
+     * Uses a 5-turn servo (1800° total travel each direction) with a gear ratio.
+     * SERVO_NAME  — hardware map name of the turret servo.
+     * MIN_ANGLE   — minimum allowed turret angle in degrees. Tune physically.
+     * MAX_ANGLE   — maximum allowed turret angle in degrees. Tune physically.
+     * IDLE_POSITION — servo position when turret is centered (0.5 = center of travel).
      */
     public static final class Turret {
-        public static final String SERVO_NAME = "Turret";
-        public static final String ENCODER_NAME = "FrontRight";
-        public static final double TICKS_PER_REV = 8192.0;
-        public static final double GEAR_RATIO = 5.714;
-        public static final double MIN_ANGLE = -90.0;
-        public static final double MAX_ANGLE = 70.0;
-        public static final double BRAKE_DISTANCE = 100.0;
-        public static final double DEAD_ZONE = 1.0;
-        public static final double MIN_POWER_VOLTS = 0.90;
-        public static final double IDLE_POWER = -1.0;
+        public static final String SERVO_NAME     = "Turret";
+        public static final double MIN_ANGLE      = -90.0;
+        public static final double MAX_ANGLE      = 70.0;
+        public static final double IDLE_POSITION  = 0.5;
     }
 
     /**
