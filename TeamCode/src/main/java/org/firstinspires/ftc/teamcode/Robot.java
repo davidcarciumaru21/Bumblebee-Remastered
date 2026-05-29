@@ -8,8 +8,7 @@ import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfigurations;
-import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
+import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfig;
 import org.firstinspires.ftc.teamcode.global.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.managers.IntakingManager;
 import org.firstinspires.ftc.teamcode.managers.ShootingManager;
@@ -55,7 +54,7 @@ public class Robot {
 
     // alliance and goal pose
     private AllianceColor allianceColor = AllianceColor.RED;
-    private Pose          goalPose      = ShootingConfigurations.Goals.RED_GOAL_POSE;
+    private Pose          goalPose      = ShootingConfig.Goals.RED_GOAL_POSE;
 
     public Robot(HardwareMap hardwareMap) {
         // subsystems
@@ -95,17 +94,17 @@ public class Robot {
 
             if (color.equalsIgnoreCase("BLUE")) {
                 allianceColor = AllianceColor.BLUE;
-                goalPose      = ShootingConfigurations.Goals.BLUE_GOAL_POSE;
+                goalPose      = ShootingConfig.Goals.BLUE_GOAL_POSE;
             } else {
                 allianceColor = AllianceColor.RED;
-                goalPose      = ShootingConfigurations.Goals.RED_GOAL_POSE;
+                goalPose      = ShootingConfig.Goals.RED_GOAL_POSE;
             }
 
         } catch (IOException e) {
             // fallback — default pose and RED alliance
             follower.setStartingPose(new Pose(0, 0, 0));
             allianceColor = AllianceColor.BLUE;
-            goalPose      = ShootingConfigurations.Goals.BLUE_GOAL_POSE;
+            goalPose      = ShootingConfig.Goals.BLUE_GOAL_POSE;
         }
 
         follower.startTeleOpDrive();

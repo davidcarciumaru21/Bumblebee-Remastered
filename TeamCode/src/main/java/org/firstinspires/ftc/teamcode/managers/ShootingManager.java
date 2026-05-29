@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.managers;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfigurations;
+import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfig;
 import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.managersEnums.ShootingManagerState;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
@@ -93,20 +93,20 @@ public class ShootingManager {
                                                            double angleToGoal) {
         double height;
         double scoreAngle;
-        double g = ShootingConfigurations.G;
+        double g = ShootingConfig.G;
 
-        if (distance < ShootingConfigurations.Close.MAX_DISTANCE) {
-            distance  -= ShootingConfigurations.Close.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Close.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Close.SCORE_ANGLE;
-        } else if (distance < ShootingConfigurations.Mid.MAX_DISTANCE) {
-            distance  -= ShootingConfigurations.Mid.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Mid.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Mid.SCORE_ANGLE;
+        if (distance < ShootingConfig.Close.MAX_DISTANCE) {
+            distance  -= ShootingConfig.Close.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Close.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Close.SCORE_ANGLE;
+        } else if (distance < ShootingConfig.Mid.MAX_DISTANCE) {
+            distance  -= ShootingConfig.Mid.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Mid.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Mid.SCORE_ANGLE;
         } else {
-            distance  -= ShootingConfigurations.Far.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Far.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Far.SCORE_ANGLE;
+            distance  -= ShootingConfig.Far.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Far.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Far.SCORE_ANGLE;
         }
 
         // A. calculate initial launch angle and velocity

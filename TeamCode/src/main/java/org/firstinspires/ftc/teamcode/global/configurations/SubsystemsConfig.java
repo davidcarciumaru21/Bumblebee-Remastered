@@ -149,6 +149,7 @@ public class SubsystemsConfig {
     }
 
     /**
+     *
      * Drivetrain motor constants.
      * Used by both ManualTeleOp and Pedro Pathing.
      * LEFT_FRONT_MOTOR_NAME       — hardware map name for the front left motor.
@@ -165,14 +166,14 @@ public class SubsystemsConfig {
     public static final class Drivetrain {
         public static final String                  FRONT_LEFT_MOTOR_NAME       = "FrontLeft";
         public static final String                  BACK_LEFT_MOTOR_NAME        = "BackLeft";
-        public static final String                  FORNT_RIGHT_MOTOR_NAME      = "FrontRight";
+        public static final String                  FRONT_RIGHT_MOTOR_NAME      = "FrontRight";
         public static final String                  BACK_RIGHT_MOTOR_NAME       = "BackRight";
         public static final DcMotorSimple.Direction FRONT_LEFT_MOTOR_DIRECTION  = DcMotorSimple.Direction.REVERSE;
         public static final DcMotorSimple.Direction BACK_LEFT_MOTOR_DIRECTION   = DcMotorSimple.Direction.REVERSE;
         public static final DcMotorSimple.Direction FRONT_RIGHT_MOTOR_DIRECTION = DcMotorSimple.Direction.FORWARD;
         public static final DcMotorSimple.Direction BACK_RIGHT_MOTOR_DIRECTION  = DcMotorSimple.Direction.FORWARD;
-        public static final double                  X_VELOCITY                  = 0;
-        public static final double                  Y_VELOCITY                  = 0;
+        public static final double                  X_VELOCITY                  = 79.7768;
+        public static final double                  Y_VELOCITY                  = 64.4725;
     }
 
     /**
@@ -194,26 +195,26 @@ public class SubsystemsConfig {
      * IMU_ORIENTATION             — orientation of the Control Hub on the robot.
      */
     public static final class Localizer {
-        public static final double LEFT_POD_Y               = 0.0;
-        public static final double RIGHT_POD_Y              = -0.0;
-        public static final double STRAFE_POD_X             = -0.5;
+        public static final double LEFT_POD_Y              = 4.25;
+        public static final double RIGHT_POD_Y             = -4.25;
+        public static final double STRAFE_POD_X            = -2.93;
 
-        public static final String LEFT_ENCODER_NAME        = "leftFront";
-        public static final String RIGHT_ENCODER_NAME       = "rightRear";
-        public static final String STRAFE_ENCODER_NAME      = "rightFront";
+        public static final String LEFT_ENCODER_NAME       = "BackRight";
+        public static final String RIGHT_ENCODER_NAME      = "Indexer";
+        public static final String STRAFE_ENCODER_NAME     = "Intake";
 
         public static final double LEFT_ENCODER_DIRECTION   = Encoder.FORWARD;
         public static final double RIGHT_ENCODER_DIRECTION  = Encoder.FORWARD;
         public static final double STRAFE_ENCODER_DIRECTION = Encoder.FORWARD;
 
-        public static final double FORWARD_TICKS_TO_INCHES  = 0.0; // TODO: tune with forward tuner
-        public static final double STRAFE_TICKS_TO_INCHES   = 0.0; // TODO: tune with lateral tuner
-        public static final double TURN_TICKS_TO_INCHES     = 0.0; // TODO: tune with turn tuner
+        public static final double FORWARD_TICKS_TO_INCHES = -0.001966;
+        public static final double STRAFE_TICKS_TO_INCHES  = -0.001988;
+        public static final double TURN_TICKS_TO_INCHES    = -0.001996;
 
-        public static final String IMU_HARDWARE_MAP_NAME    = "imu";
+        public static final String IMU_HARDWARE_MAP_NAME   = "imu";
         public static final RevHubOrientationOnRobot IMU_ORIENTATION = new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
     }
 }
