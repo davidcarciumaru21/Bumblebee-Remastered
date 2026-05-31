@@ -22,7 +22,7 @@ public class ShootingConfig {
      * MAX_DISTANCE        — maximum distance in inches for this zone.
      */
     public static final class Close {
-        public static final double SCORE_HEIGHT        = 40.0;
+        public static final double SCORE_HEIGHT        = 38.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 15.0;
         public static final double MAX_DISTANCE        = 60.0;
@@ -37,7 +37,7 @@ public class ShootingConfig {
      * MAX_DISTANCE        — maximum distance in inches for this zone.
      */
     public static final class Mid {
-        public static final double SCORE_HEIGHT        = 40.0;
+        public static final double SCORE_HEIGHT        = 38.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 15.0;
         public static final double MAX_DISTANCE        = 110.0;
@@ -51,7 +51,7 @@ public class ShootingConfig {
      * PASS_THROUGH_RADIUS — horizontal distance before goal where ball must have SCORE_ANGLE.
      */
     public static final class Far {
-        public static final double SCORE_HEIGHT        = 40.0;
+        public static final double SCORE_HEIGHT        = 38.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 15.0;
     }
@@ -64,7 +64,7 @@ public class ShootingConfig {
      * Modify these values if the goal position changes between seasons.
      */
     public static final class Goals {
-        public static final Pose RED_GOAL_POSE  = new Pose(138, 138);
-        public static final Pose BLUE_GOAL_POSE = new Pose(138, 138).mirror();
+        public static final Pose RED_GOAL_POSE  = new Pose(136, 123);
+        public static final Pose BLUE_GOAL_POSE = new Pose(136, 123).mirror();
     }
 }

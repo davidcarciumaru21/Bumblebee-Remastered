@@ -25,10 +25,6 @@ public class Turret implements Subsystem {
     private TurretState state          = TurretState.IDLE;
     private double      targetPosition = 0.5;
 
-    // linear regression constants — tune with TurretTuner
-    private static final double SCALE  = 0.00183333;
-    private static final double OFFSET = 0.5;
-
     public Turret(HardwareMap hardwareMap) {
         this.turret = hardwareMap.get(Servo.class, SubsystemsConfig.Turret.SERVO_NAME);
         this.turret.setPosition(0.5);
@@ -45,7 +41,7 @@ public class Turret implements Subsystem {
                 Math.min(SubsystemsConfig.Turret.MAX_ANGLE, angle)
         );
         this.targetPosition = MathUtils.clamp(
-                SCALE * angle + OFFSET,
+                0.00000123457 * angle * angle + 0.00166667 * angle + 0.5,
                 0.0,
                 1.0
         );
@@ -63,11 +59,6 @@ public class Turret implements Subsystem {
 
     /** Returns the current state of the turret. */
     public TurretState getState() { return this.state; }
-
-    /** Returns the current target angle in degrees. */
-    public double getTargetAngle() {
-        return (targetPosition - OFFSET) / SCALE;
-    }
 
     /** Returns the current target servo position. */
     public double getTargetPosition() { return this.targetPosition; }

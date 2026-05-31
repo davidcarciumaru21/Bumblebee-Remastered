@@ -162,7 +162,6 @@ public class Robot {
     public AllianceColor getAllianceColor()     { return allianceColor; }
     public Follower      getFollower()          { return follower; }
     public Pose          getGoalPose()          { return goalPose; }
-    public double        getTargetTurretAngle() { return turret.getTargetAngle(); }
 
     /**
      * Updates all subsystems and managers.

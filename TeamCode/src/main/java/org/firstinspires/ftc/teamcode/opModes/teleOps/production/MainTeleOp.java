@@ -87,7 +87,6 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("pose y",     "%.2f", robot.getFollower().getPose().getY());
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));
         telemetry.addData("distance",   "%.2f in", robot.getFollower().getPose().distanceFrom(robot.getGoalPose()));
-        telemetry.addData("target angle", "%.2f", robot.getTargetTurretAngle());
         telemetry.update();
     }
 }

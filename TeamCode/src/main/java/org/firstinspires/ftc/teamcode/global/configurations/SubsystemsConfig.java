@@ -133,8 +133,8 @@ public class SubsystemsConfig {
      */
     public static final class Turret {
         public static final String SERVO_NAME     = "Turret";
-        public static final double MIN_ANGLE      = -90.0;
-        public static final double MAX_ANGLE      = 70.0;
+        public static final double MIN_ANGLE      = -130.0;
+        public static final double MAX_ANGLE      = 90.0;
         public static final double IDLE_POSITION  = 0.5;
     }
 
