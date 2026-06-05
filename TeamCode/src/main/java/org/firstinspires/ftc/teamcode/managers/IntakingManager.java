@@ -29,6 +29,10 @@ public class IntakingManager {
 
     private IntakingManagerState state = IntakingManagerState.IDLE;
 
+    // emergency flags
+    private boolean indexerForcedStart = false;
+    private boolean indexerForcedStop  = false;
+
     public IntakingManager(Intake intake, Indexer indexer) {
         this.intake  = intake;
         this.indexer = indexer;
@@ -38,21 +42,45 @@ public class IntakingManager {
     public void pull() {
         this.state = IntakingManagerState.PULL;
         this.stallTimer.reset();
+        clearEmergencyOverrides();
     }
 
     /** Activates full pull for shooting. Stall detection is disabled. */
     public void shootPull() {
         this.state = IntakingManagerState.SHOOT_PULL;
+        clearEmergencyOverrides();
     }
 
     /** Reverses intake and indexer to eject game elements. */
     public void reverse() {
         this.state = IntakingManagerState.REVERSE;
+        clearEmergencyOverrides();
     }
 
     /** Stops and returns to idle power. */
     public void idle() {
         this.state = IntakingManagerState.IDLE;
+        clearEmergencyOverrides();
+    }
+
+    // --- emergency overrides ---
+
+    /** Forces the indexer to start pulling manually, overriding the state machine. */
+    public void forceIndexerStart() {
+        this.indexerForcedStart = true;
+        this.indexerForcedStop  = false;
+    }
+
+    /** Forces the indexer to stop manually, overriding the state machine. */
+    public void forceIndexerStop() {
+        this.indexerForcedStart = false;
+        this.indexerForcedStop  = true;
+    }
+
+    /** Resets emergency flags so the state machine can take over again. */
+    private void clearEmergencyOverrides() {
+        this.indexerForcedStart = false;
+        this.indexerForcedStop  = false;
     }
 
     /** Returns the current state of the intaking manager. */
@@ -91,6 +119,13 @@ public class IntakingManager {
                 intake.push();
                 indexer.push();
                 break;
+        }
+
+        // apply emergency overrides for the indexer
+        if (indexerForcedStart) {
+            indexer.pull();
+        } else if (indexerForcedStop) {
+            indexer.idle();
         }
 
         intake.update();

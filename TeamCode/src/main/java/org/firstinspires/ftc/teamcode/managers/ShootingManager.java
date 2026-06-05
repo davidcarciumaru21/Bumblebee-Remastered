@@ -42,6 +42,9 @@ public class ShootingManager {
     private ShootingManagerState state = ShootingManagerState.IDLE;
     private final ElapsedTime    timer = new ElapsedTime();
 
+    // emergency flags
+    private boolean turretForcedToZero = false;
+
     public ShootingManager(Flywheel flywheel,
                            Deflector deflector,
                            Turret turret,
@@ -71,6 +74,25 @@ public class ShootingManager {
             intakingManager.idle();
             timer.reset();
         }
+    }
+
+    // --- emergency overrides ---
+
+    /** Toggles forcing the turret to point straight forward (0 degrees). */
+    public void forceTurretToZero() {
+        this.turretForcedToZero = !this.turretForcedToZero;
+    }
+
+    /** Forces state to IDLE and opens the stopper manually. */
+    public void forceStopperOpen() {
+        this.state = ShootingManagerState.IDLE;
+        stopper.open();
+    }
+
+    /** Forces state to IDLE and closes the stopper manually. */
+    public void forceStopperClose() {
+        this.state = ShootingManagerState.IDLE;
+        stopper.close();
     }
 
     /** Returns the current state of the shooting manager. */
@@ -175,7 +197,13 @@ public class ShootingManager {
         // calculate and apply targets constantly regardless of state
         Pair<Double, Double> targets = getTargetAngleAndVelocity(distance, velocityVector, angleToGoal);
 
-        turret.setTargetAngle(-Math.toDegrees(targets.first));
+        // override turret targets if emergency force zero is active
+        if (turretForcedToZero) {
+            turret.setTargetAngle(0.0);
+        } else {
+            turret.setTargetAngle(-Math.toDegrees(targets.first));
+        }
+
         flywheel.setSpeedInchesPerSecond(targets.second);
 
         // update subsystems

@@ -6,17 +6,18 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.pedropathing.ftc.localization.Encoder;
 
 /**
- * Hardware constants for all subsystems.
- * Each inner class corresponds to one subsystem.
- * Modify values here to tune robot behavior without touching subsystem logic.
+ * Configuration registry for all physical hardware components and constants on the robot.
+ * Each inner class isolates properties of a specific subsystem or functional module.
+ * Centralizing these values allows the drive team to rapidly modify and fine-tune physical behaviors
+ * (such as motor power, servo targets, tolerances, and software multipliers) without altering system execution code.
  */
 public class SubsystemsConfig {
 
     /**
-     * Voltage sensor constants.
-     * Used for filtered voltage readings across tuners and subsystems.
-     * INITIAL_FILTERED_VOLTAGE — starting value for the exponential filter, should approximate battery voltage.
-     * VOLTAGE_ALPHA — filter coefficient between 0 and 1. Lower = smoother but slower to react.
+     * Voltage sensor configuration.
+     * Essential for stabilizing subsystem performance across varying battery discharge curves.
+     * INITIAL_FILTERED_VOLTAGE — The initial baseline estimate used to seed the moving average filter on startup.
+     * VOLTAGE_ALPHA            — Low-pass filter coefficient (0 to 1). Determines how heavily new raw readings impact the smooth average.
      */
     public static final class VoltageSensor {
         public static final double INITIAL_FILTERED_VOLTAGE = 13.0;
@@ -24,13 +25,15 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Intake motor constants.
-     * Responsible for collecting and ejecting game elements.
-     * PULL_POWER         — power applied when collecting. Positive = inward.
-     * PUSH_POWER         — power applied when ejecting. Negative = outward.
-     * IDLE_POWER         — power applied when idle. Non-zero to hold game elements in place.
-     * STALL_CURRENT_AMPS — current threshold in amps above which stall is detected.
-     * STALL_TIME_MS      — time in ms current must exceed threshold before stall is confirmed.
+     * Active intake mechanism constants.
+     * Manages raw intake execution power parameters and advanced stall protection thresholds.
+     * MOTOR_NAME         — Configuration name matching the entry inside the REV Hardware Map.
+     * DIRECTION          — Rotational direction required to spin the collection rollers inward.
+     * PULL_POWER         — Active collection power factor applied during teleoperated intake sequences.
+     * PUSH_POWER         — Active expulsion power factor applied to forcefully spit out trapped elements.
+     * IDLE_POWER         — Minimal passive holding power applied to maintain element grip inside the mechanism tray.
+     * STALL_CURRENT_AMPS — Current safety margin in Amps. Readings above this indicate a physical jam.
+     * STALL_TIME_MS      — Time buffer in milliseconds that a current spike must persist to trigger automatic software unjamming.
      */
     public static final class Intake {
         public static final String                  MOTOR_NAME         = "Intake";
@@ -38,16 +41,19 @@ public class SubsystemsConfig {
         public static final double                  PULL_POWER         = 1.0;
         public static final double                  PUSH_POWER         = -1.0;
         public static final double                  IDLE_POWER         = 0.4;
+        public static final String                  CURRENT_SENSOR_NAME= "Intake";
         public static final double                  STALL_CURRENT_AMPS = 6.0;
         public static final double                  STALL_TIME_MS      = 300.0;
     }
 
     /**
-     * Indexer motor constants.
-     * Responsible for feeding game elements into the flywheel.
-     * PULL_POWER — power applied when feeding toward flywheel. Positive = toward flywheel.
-     * PUSH_POWER — power applied when reversing. Negative = away from flywheel.
-     * IDLE_POWER — power applied when idle. Non-zero to hold game elements in place.
+     * Internal indexing system constants.
+     * Controls the secondary serial pathway that channels elements from the entry tray directly up to the flywheel throat.
+     * MOTOR_NAME — Configuration identifier inside the control hub's hardware map layout.
+     * DIRECTION  — Direction setup mapped to push elements upstream toward the shooter mechanism.
+     * PULL_POWER — Forward feed power factor applied when actively indexing elements into the launching zone.
+     * PUSH_POWER — Reverse power factor used during systemic clearance or purge protocols.
+     * IDLE_POWER — Minor constant force applied to ensure elements do not bounce loosely out of queueing lines.
      */
     public static final class Indexer {
         public static final String                  MOTOR_NAME = "Indexer";
@@ -58,12 +64,13 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Stopper servo constants.
-     * Responsible for blocking or releasing game elements toward the flywheel.
-     * OPEN_POSITION    — servo position when stopper is fully open.
-     * CLOSED_POSITION  — servo position when stopper is fully closed.
-     * TIME_TO_OPEN_MS  — time in ms to wait before considering stopper fully open.
-     * TIME_TO_CLOSE_MS — time in ms to wait before considering stopper fully closed.
+     * Mechanical element gate (Stopper) configurations.
+     * Fast-acting physical barrier preventing elements from rolling into a spinning flywheel prematurely.
+     * SERVO_NAME       — The target name configured for this physical servo inside the REV Hub software layout.
+     * OPEN_POSITION    — Absolute servo position scalar representing a cleared and unrestricted launch channel.
+     * CLOSED_POSITION  — Absolute servo position scalar representing a completely blocked and safely locked channel.
+     * TIME_TO_OPEN_MS  — Estimated mechanical sweep time required for the physical armature to clear the channel.
+     * TIME_TO_CLOSE_MS — Estimated mechanical sweep time required for the physical armature to re-engage the channel barrier.
      */
     public static final class Stopper {
         public static final String SERVO_NAME       = "Stopper";
@@ -74,13 +81,13 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Deflector servo constants.
-     * Responsible for adjusting the trajectory of game elements.
-     * IDLE_POSITION  — servo position when deflector is at rest.
-     * OPEN_POSITION  — servo position when deflector is fully open.
-     * CLOSE_POSITION — servo position when deflector is fully closed.
-     * MIN_ANGLE      — minimum launch angle in radians (relative to horizontal). Measured physically.
-     * MAX_ANGLE      — maximum launch angle in radians (relative to horizontal). Measured physically.
+     * Variable trajectory exit ramp (Deflector) constants.
+     * Dynamically scales the vertical launch angle profile based on absolute field-relative distance tracking.
+     * SERVO_NAME     — Hardware mapping name for the physical deflector servo actuator.
+     * DIRECTION      — Physical sweep orientation matching increasing trajectory angles.
+     * IDLE_POSITION  — Rest target position when no active firing calculations are requested by the primary scheduler.
+     * MIN_ANGLE      — Bottom-range mechanical bound measured in radians relative to the flat chassis floor.
+     * MAX_ANGLE      — Upper mechanical safety limit measured in radians relative to the flat chassis floor.
      */
     public static final class Deflector {
         public static final String          SERVO_NAME     = "Deflector";
@@ -91,9 +98,9 @@ public class SubsystemsConfig {
     }
 
     /**
-     * LockedTurret servo constants.
-     * Debug-only subsystem for locking the turret to a fixed position.
-     * LOCKED_POSITION — servo position to lock the turret to. Tune with LockedTurretTuner.
+     * Static debug turret lock properties.
+     * Primarily used within isolated tuning environments to hold the structural platform perfectly rigid.
+     * LOCKED_POSITION — Absolute servo position target required to clamp the mechanism safely against rotation.
      */
     public static final class LockedTurret {
         public static final String SERVO_NAME      = "servo";
@@ -101,15 +108,16 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Flywheel motor constants.
-     * Responsible for launching game elements at a target RPM.
-     * IDLE_POWER            — power applied when idle. Non-zero keeps flywheel spinning slowly.
-     * TICKS_PER_REV         — encoder ticks per motor revolution. Specific to motor model.
-     * MAX_ACCEL_RPM_PER_SEC — maximum RPM change per second. Limits ramp rate.
-     * AT_SPEED_TOLERANCE    — RPM tolerance to consider flywheel at target speed.
-     * KP                    — proportional gain. Tune with FlywheelKpTuner.
-     * KS                    — static feedforward in volts. Tune with FlywheelKsTuner.
-     * KV                    — velocity feedforward in V/RPM. Tune with FlywheelKvTuner.
+     * High-speed dual flywheel launcher constants.
+     * Manages velocity acceleration limits, velocity tracking, and feedforward tuning vectors.
+     * MOTOR_NAME_1 / 2      — Matching hardware configuration entries for both paired drive motors.
+     * IDLE_POWER            — Constant base power modifier used to keep the rotors idling at low energy between active shots.
+     * TICKS_PER_REV         — Resolution count of the underlying digital optical encoder system.
+     * MAX_ACCEL_RPM_PER_SEC — Safety limit restricting acceleration changes to avoid breaking gears or tearing high-speed belts.
+     * AT_SPEED_TOLERANCE    — Maximum RPM error variance allowed before system signals "ready-to-fire" to the indexer.
+     * KP                    — Proportional tuning coefficient. Directly counteracts instant error.
+     * KS                    — Feedforward component used to break initial motor shaft friction and overcome cogging.
+     * KV                    — Velocity feedforward scalar converting structural target RPM directly to voltage outputs.
      */
     public static final class Flywheel {
         public static final String MOTOR_NAME_1          = "FlywheelMotor1";
@@ -124,12 +132,12 @@ public class SubsystemsConfig {
     }
 
     /**
-     * Turret servo constants.
-     * Uses a 5-turn servo (1800° total travel each direction) with a gear ratio.
-     * SERVO_NAME  — hardware map name of the turret servo.
-     * MIN_ANGLE   — minimum allowed turret angle in degrees. Tune physically.
-     * MAX_ANGLE   — maximum allowed turret angle in degrees. Tune physically.
-     * IDLE_POSITION — servo position when turret is centered (0.5 = center of travel).
+     * Continuous tracking rotational turret constants.
+     * Operates a multi-turn proportional servo assembly linked via external reduction gears to achieve field-centric isolation.
+     * SERVO_NAME    — Name parameter utilized to map the physical servo connection on the REV expansion hub.
+     * MIN_ANGLE     — Structural safe travel threshold bounded in degrees to prevent umbilical wrap damage.
+     * MAX_ANGLE     — Opposite directional structural threshold bounded in degrees to prevent physical collision.
+     * IDLE_POSITION — Hardware home target mapping to 0 degrees relative to the direct centerline of the drive chassis.
      */
     public static final class Turret {
         public static final String SERVO_NAME     = "Turret";
@@ -139,19 +147,11 @@ public class SubsystemsConfig {
     }
 
     /**
-     *
-     * Drivetrain motor constants.
-     * Used by both ManualTeleOp and Pedro Pathing.
-     * LEFT_FRONT_MOTOR_NAME       — hardware map name for the front left motor.
-     * LEFT_REAR_MOTOR_NAME        — hardware map name for the rear left motor.
-     * RIGHT_FRONT_MOTOR_NAME      — hardware map name for the front right motor.
-     * RIGHT_REAR_MOTOR_NAME       — hardware map name for the rear right motor.
-     * LEFT_FRONT_MOTOR_DIRECTION  — direction of the front left motor.
-     * LEFT_REAR_MOTOR_DIRECTION   — direction of the rear left motor.
-     * RIGHT_FRONT_MOTOR_DIRECTION — direction of the front right motor.
-     * RIGHT_REAR_MOTOR_DIRECTION  — direction of the rear right motor.
-     * X_VELOCITY                  — maximum velocity in the x direction in inches/second. Tune with Pedro Pathing.
-     * Y_VELOCITY                  — maximum velocity in the y direction in inches/second. Tune with Pedro Pathing.
+     * Mecanum drivetrain chassis constants.
+     * Provides physical configuration maps for base teleop driving and specialized driver scaling modes.
+     * FRONT/BACK MOTOR NAMES — Hardware designators mapped to the exact directional corners of the physical frame.
+     * X_VELOCITY / Y_VELOCITY— Velocity empirical feedforward tuning modifiers utilized by Pedro Pathing.
+     * SLOW_MODE_COEFFICIENT — Linear speed scale modifier applied to full motor throttle when precision driver manipulation is active.
      */
     public static final class Drivetrain {
         public static final String                  FRONT_LEFT_MOTOR_NAME       = "FrontLeft";
@@ -164,25 +164,25 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction BACK_RIGHT_MOTOR_DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  X_VELOCITY                  = 79.7768;
         public static final double                  Y_VELOCITY                  = 64.4725;
+        public static final double                  SLOW_MODE_COEFFICIENT       = 0.40;
     }
 
     /**
-     * Localizer constants for Pedro Pathing.
-     * Uses three dead wheel odometry pods and IMU.
-     * LEFT_POD_Y                  — y offset of the left parallel pod in inches relative to robot center.
-     * RIGHT_POD_Y                 — y offset of the right parallel pod in inches relative to robot center.
-     * STRAFE_POD_X                — x offset of the strafe pod in inches relative to robot center.
-     * LEFT_ENCODER_NAME           — hardware map name of the motor port the left encoder is plugged into.
-     * RIGHT_ENCODER_NAME          — hardware map name of the motor port the right encoder is plugged into.
-     * STRAFE_ENCODER_NAME         — hardware map name of the motor port the strafe encoder is plugged into.
-     * LEFT_ENCODER_DIRECTION      — encoder direction for the left pod. Reverse if x decreases when moving forward.
-     * RIGHT_ENCODER_DIRECTION     — encoder direction for the right pod. Reverse if x decreases when moving forward.
-     * STRAFE_ENCODER_DIRECTION    — encoder direction for the strafe pod. Reverse if y decreases when moving left.
-     * FORWARD_TICKS_TO_INCHES     — multiplier converting encoder ticks to inches for forward movement. Tune with forward tuner.
-     * STRAFE_TICKS_TO_INCHES      — multiplier converting encoder ticks to inches for lateral movement. Tune with lateral tuner.
-     * TURN_TICKS_TO_INCHES        — multiplier converting encoder ticks to inches for rotation. Tune with turn tuner.
-     * IMU_HARDWARE_MAP_NAME       — hardware map name of the IMU.
-     * IMU_ORIENTATION             — orientation of the Control Hub on the robot.
+     * Absolute physical robot frame layout dimensions.
+     * Values are stored in raw real-world inches to handle dynamic wall relocalization.
+     * LENGTH — Distance across the front-to-back chassis footprint.
+     * WIDTH  — Distance across the left-to-right side-to-side footprint.
+     */
+    public static final class RobotDimensions {
+        public static final double LENGTH = 17.5;
+        public static final double WIDTH  = 17.5;
+    }
+
+    /**
+     * High-precision dead wheel odometry localizer configuration for Pedro Pathing.
+     * Outlines layout geometries, ticks-to-inches scalars, and hardware orientations.
+     * POD_X / Y POSITIONS — Displacement offsets measured relative to the geometric center point of the robot chassis.
+     * FORWARD / STRAFE / TURN INCHES — Calibration conversions matching raw encoder tick transitions to actual linear inches traveled.
      */
     public static final class Localizer {
         public static final double LEFT_POD_Y              = 4.25;
