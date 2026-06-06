@@ -79,6 +79,7 @@ public class MainTeleOp extends OpMode {
             }
         }
 
+
         // Active Automated Firing Activation sequence
         if (gamepad1.rightBumperWasPressed()) {
             robot.driver.shoot();
@@ -106,8 +107,8 @@ public class MainTeleOp extends OpMode {
         // Active Dead Wheel Odometry Manual Correction Hotkeys
         // Triggered when driving flat into structural perimeter field bounds to correct tracking drift
         if (gamepad2.xWasPressed())          robot.emergency.resetX();        // Recalibrate X axis coordinate at boundary wall
-        if (gamepad2.bWasPressed())          robot.emergency.resetY();        // Recalibrate Y axis coordinate at boundary wall
-        if (gamepad2.yWasPressed())          robot.emergency.resetHeading();  // Recalibrate orientation parameters at boundary wall
+        if (gamepad2.yWasPressed())          robot.emergency.resetY();        // Recalibrate Y axis coordinate at boundary wall
+        if (gamepad2.bWasPressed())          robot.emergency.resetHeading();  // Recalibrate orientation parameters at boundary wall
 
         // Isolated Hardware Servo Component Adjustments
         if (gamepad2.left_trigger > 0.5)     robot.emergency.forceStopperOpen();

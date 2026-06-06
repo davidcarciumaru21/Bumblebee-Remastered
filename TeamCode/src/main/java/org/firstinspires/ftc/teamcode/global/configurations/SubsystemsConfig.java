@@ -42,8 +42,6 @@ public class SubsystemsConfig {
         public static final double                  PUSH_POWER         = -1.0;
         public static final double                  IDLE_POWER         = 0.4;
         public static final String                  CURRENT_SENSOR_NAME= "Intake";
-        public static final double                  STALL_CURRENT_AMPS = 6.0;
-        public static final double                  STALL_TIME_MS      = 300.0;
     }
 
     /**

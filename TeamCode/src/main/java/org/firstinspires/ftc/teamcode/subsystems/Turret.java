@@ -41,7 +41,7 @@ public class Turret implements Subsystem {
                 Math.min(SubsystemsConfig.Turret.MAX_ANGLE, angle)
         );
         this.targetPosition = MathUtils.clamp(
-                0.00000123457 * angle * angle + 0.00166667 * angle + 0.5,
+                (3.08642e-7 * angle * angle) + (0.00163889 * angle) + SubsystemsConfig.Turret.IDLE_POSITION,
                 0.0,
                 1.0
         );

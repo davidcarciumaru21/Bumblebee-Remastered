@@ -1,35 +1,23 @@
 package org.firstinspires.ftc.teamcode.managers;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.IntakingManagerState;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 /**
- * Manages the intake and indexer subsystems.
- * Handles pulling, shooting pull, reversing, and automatic stall detection.
- *
- * <p>Stall detection is active only in PULL state.
- * When stall is detected (3 balls assumed), transitions to IDLE automatically.
- * Can be reactivated immediately by calling pull() again.
- *
- * State machine:
- * - IDLE        — intake and indexer at idle power
- * - PULL        — intake at full pull, indexer at idle, stall detection active
- * - SHOOT_PULL  — intake and indexer at full pull, no stall detection
- * - REVERSE     — intake and indexer at push power
+ * Coordinated lifecycle manager for collection and internal processing mechanics.
+ * Implements a state-guarded execution envelope designed to prevent continuous frame polls
+ * from prematurely stripping manual operator-directed emergency intervention flags.
  */
 public class IntakingManager {
 
-    private final Intake      intake;
-    private final Indexer     indexer;
-    private final ElapsedTime stallTimer = new ElapsedTime();
+    private final Intake  intake;
+    private final Indexer indexer;
 
     private IntakingManagerState state = IntakingManagerState.IDLE;
 
-    // emergency flags
+    // Prioritized low-level hardware configuration override registers
     private boolean indexerForcedStart = false;
     private boolean indexerForcedStop  = false;
 
@@ -38,58 +26,82 @@ public class IntakingManager {
         this.indexer = indexer;
     }
 
-    /** Starts pulling game elements. Stall detection is active in this state. */
+    /**
+     * Initiates active collection mechanics to ingest game elements from the field perimeter.
+     * Guarded by a state variance evaluation step to safeguard localized override tracking arrays.
+     */
     public void pull() {
-        this.state = IntakingManagerState.PULL;
-        this.stallTimer.reset();
-        clearEmergencyOverrides();
+        if (this.state != IntakingManagerState.PULL) {
+            this.state = IntakingManagerState.PULL;
+            clearEmergencyOverrides();
+        }
     }
 
-    /** Activates full pull for shooting. Stall detection is disabled. */
+    /**
+     * Commands maximum throughput velocity across internal tracking arrays to feed active firing states.
+     * Bypasses localized telemetry constraints to enforce uninterrupted programmatic continuity.
+     */
     public void shootPull() {
-        this.state = IntakingManagerState.SHOOT_PULL;
-        clearEmergencyOverrides();
+        if (this.state != IntakingManagerState.SHOOT_PULL) {
+            this.state = IntakingManagerState.SHOOT_PULL;
+            clearEmergencyOverrides();
+        }
     }
 
-    /** Reverses intake and indexer to eject game elements. */
+    /**
+     * Executes systemic inversion vectors across all collection roller assemblies.
+     * Utilized to eject jammed components or clear intake channels via negative power coefficients.
+     */
     public void reverse() {
-        this.state = IntakingManagerState.REVERSE;
-        clearEmergencyOverrides();
+        if (this.state != IntakingManagerState.REVERSE) {
+            this.state = IntakingManagerState.REVERSE;
+            clearEmergencyOverrides();
+        }
     }
 
-    /** Stops and returns to idle power. */
+    /**
+     * Transitions internal operating states back to passive holding modes.
+     * Drops motor duty-cycle demands to configurations limits to minimize residual thermal buildup.
+     */
     public void idle() {
-        this.state = IntakingManagerState.IDLE;
-        clearEmergencyOverrides();
+        if (this.state != IntakingManagerState.IDLE) {
+            this.state = IntakingManagerState.IDLE;
+            clearEmergencyOverrides();
+        }
     }
 
-    // --- emergency overrides ---
+    // =========================================================================
+    // EMERGENCY OVERRIDE INTERFACES (DIRECT BUS BYPASS ROUTING)
+    // =========================================================================
 
-    /** Forces the indexer to start pulling manually, overriding the state machine. */
+    /** Forces the internal indexer loop to engage positive velocity vectors, bypassing automated managers. */
     public void forceIndexerStart() {
         this.indexerForcedStart = true;
         this.indexerForcedStop  = false;
     }
 
-    /** Forces the indexer to stop manually, overriding the state machine. */
+    /** Forces the internal indexer loop to cease mechanical operations, arresting power delivery models. */
     public void forceIndexerStop() {
         this.indexerForcedStart = false;
         this.indexerForcedStop  = true;
     }
 
-    /** Resets emergency flags so the state machine can take over again. */
+    /** Re-establishes normal automated execution paradigms by resetting localized override registers. */
     private void clearEmergencyOverrides() {
         this.indexerForcedStart = false;
         this.indexerForcedStop  = false;
     }
 
-    /** Returns the current state of the intaking manager. */
+    /** Fetches the structural lifecycle state configuration currently processed by this controller. */
     public IntakingManagerState getState() { return this.state; }
 
-    /** Returns true if the intaking manager is idle. */
+    /** Evaluates if the subsystem state architecture is currently bound inside an inactive IDLE profile. */
     public boolean isIdle() { return this.state == IntakingManagerState.IDLE; }
 
-    /** Must be called every loop. */
+    /**
+     * Executes systemic evaluations and processes state-machine transitions across the subsystem array.
+     * Intercepts standard automation profiles with active override parameters directly prior to bus transmission.
+     */
     public void update() {
         switch (state) {
             case IDLE:
@@ -98,14 +110,6 @@ public class IntakingManager {
                 break;
 
             case PULL:
-                if (intake.getCurrent() >= SubsystemsConfig.Intake.STALL_CURRENT_AMPS
-                        && stallTimer.milliseconds() > SubsystemsConfig.Intake.STALL_TIME_MS) {
-                    intake.idle();
-                    indexer.idle();
-                    state = IntakingManagerState.IDLE;
-                    break;
-                }
-
                 intake.pull();
                 indexer.idle();
                 break;
@@ -121,13 +125,17 @@ public class IntakingManager {
                 break;
         }
 
-        // apply emergency overrides for the indexer
+        // =========================================================================
+        // HARDWARE OVERRIDE INJECTION INTERCEPT LAYER
+        // =========================================================================
+        // Directly overrides downstream servo or motor registries if manual parameters are locked
         if (indexerForcedStart) {
             indexer.pull();
         } else if (indexerForcedStop) {
             indexer.idle();
         }
 
+        // Commit newly formatted operational profiles to physical hardware wrappers
         intake.update();
         indexer.update();
     }
