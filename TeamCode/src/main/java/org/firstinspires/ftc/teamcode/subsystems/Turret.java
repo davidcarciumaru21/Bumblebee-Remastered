@@ -8,62 +8,63 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.TurretState;
 import org.firstinspires.ftc.teamcode.utils.MathUtils;
 
 /**
- * Controls the turret servo using a linear regression to convert angle to servo position.
- * The servo supports 5 full turns, allowing precise positioning.
- *
- * <p>Regression: position = SCALE * angle + OFFSET
- * Tune SCALE and OFFSET with TurretTuner.
- *
- * State machine:
- * - IDLE        — turret holds at center position (0.5)
- * - AT_POSITION — turret holds at a custom target angle
+ * Controls the tracking turret servo using a refined quadratic regression model.
+ * Features an automated out-of-bounds boundary intercept that forces the assembly
+ * back to mechanical zero whenever tracking vectors diverge past physical sweep limits.
  */
 public class Turret implements Subsystem {
 
     private final Servo turret;
 
     private TurretState state          = TurretState.IDLE;
-    private double      targetPosition = 0.5;
+    private double      targetPosition = SubsystemsConfig.Turret.IDLE_POSITION;
 
     public Turret(HardwareMap hardwareMap) {
         this.turret = hardwareMap.get(Servo.class, SubsystemsConfig.Turret.SERVO_NAME);
-        this.turret.setPosition(0.5);
+        this.turret.setPosition(SubsystemsConfig.Turret.IDLE_POSITION);
     }
 
     /**
-     * Sets the target angle in degrees and transitions to AT_POSITION.
-     * Angle is clamped to the configured min/max range.
-     * @param angle target angle in degrees
+     * Sets the target alignment angle and computes the corresponding servo duty cycle.
+     * Evaluates boundary constraints; if the target falls outside permitted physical limits,
+     * the system executes a fail-safe fallback routine, forcing the orientation to 0 degrees.
+     * * @param angle Target angular displacement in degrees relative to the chassis forward vector.
      */
     public void setTargetAngle(double angle) {
-        angle = Math.max(
-                SubsystemsConfig.Turret.MIN_ANGLE,
-                Math.min(SubsystemsConfig.Turret.MAX_ANGLE, angle)
-        );
+
+        // Dynamic Boundary Evaluation: Check if the computed tracking vector is out of range
+        if (angle < SubsystemsConfig.Turret.MIN_ANGLE || angle > SubsystemsConfig.Turret.MAX_ANGLE) {
+            // Prevent mechanical straining or pinning at hardware hard-stops by returning home
+            angle = 0.0;
+        }
+
+        // Mathematical Model: y = (3.08642 * 10^-7) * x^2 + 0.00163889 * x + 0.5
+        // When angle is forced to 0.0 via the fail-safe above, this cleanly resolves to 0.5 (Center)
         this.targetPosition = MathUtils.clamp(
                 (3.08642e-7 * angle * angle) + (0.00163889 * angle) + SubsystemsConfig.Turret.IDLE_POSITION,
                 0.0,
                 1.0
         );
+
         this.state = TurretState.AT_POSITION;
     }
 
-    /** Returns turret to center position (0.5). */
+    /** Returns the structural tracking array back to its hardware center home index (0.5). */
     public void idle() {
-        this.targetPosition = 0.5;
+        this.targetPosition = SubsystemsConfig.Turret.IDLE_POSITION;
         this.state          = TurretState.IDLE;
     }
 
-    /** Returns true if turret is at a custom position. */
+    /** Boolean flag indicating if the localized system is executing an active tracking state sequence. */
     public boolean isAtPosition() { return this.state == TurretState.AT_POSITION; }
 
-    /** Returns the current state of the turret. */
+    /** Fetches the immediate functional state machine identifier of this structural subsystem. */
     public TurretState getState() { return this.state; }
 
-    /** Returns the current target servo position. */
+    /** Exposes the currently computed target hardware position ready to be pushed downstream. */
     public double getTargetPosition() { return this.targetPosition; }
 
-    /** Applies the staged position to hardware. Must be called every loop. */
+    /** Forces the newly calculated position register onto the physical REV expansion hub bus layer. */
     @Override
     public void update() {
         this.turret.setPosition(this.targetPosition);

@@ -79,7 +79,6 @@ public class MainTeleOp extends OpMode {
             }
         }
 
-
         // Active Automated Firing Activation sequence
         if (gamepad1.rightBumperWasPressed()) {
             robot.driver.shoot();
@@ -96,27 +95,46 @@ public class MainTeleOp extends OpMode {
         // GAMEPAD 2: AUXILIARY SUBSYSTEM DIAGNOSTICS AND FIELD RELOCALIZATION
         // =========================================================================
 
-        // Manual Turret Alignment Fine Tuning Vectors via D-Pad
-        if (gamepad2.dpadLeftWasPressed())   robot.emergency.changeTurretOffset(-1.0);
-        if (gamepad2.dpadRightWasPressed())  robot.emergency.changeTurretOffset(1.0);
-        if (gamepad2.dpadDownWasPressed())   robot.emergency.resetTurretOffset();
+        // Establish binary evaluation registers for the multi-stage hardware safety matrix
+        boolean safetyMatrixEnabled = gamepad2.left_trigger > 0.5;
+        boolean resetMatrixEnabled  = gamepad2.left_trigger > 0.5 && gamepad2.right_trigger > 0.5;
 
-        // Safety override to force the tracking turret back to mechanical zero position
-        if (gamepad2.dpadUpWasPressed())     robot.emergency.forceTurretToZero();
+        // Subsystem Diagnostic Execution Envelope: Active only when the safety trigger criteria is met
+        if (safetyMatrixEnabled) {
 
-        // Active Dead Wheel Odometry Manual Correction Hotkeys
-        // Triggered when driving flat into structural perimeter field bounds to correct tracking drift
-        if (gamepad2.xWasPressed())          robot.emergency.resetX();        // Recalibrate X axis coordinate at boundary wall
-        if (gamepad2.yWasPressed())          robot.emergency.resetY();        // Recalibrate Y axis coordinate at boundary wall
-        if (gamepad2.bWasPressed())          robot.emergency.resetHeading();  // Recalibrate orientation parameters at boundary wall
+            // --- CRITICAL ZONE: COLD-START FIELD RELOCALIZATION VECTOR INTERLOCK ---
+            // Absolute odometry overrides are structurally isolated; requires both triggers depressed to bypass locks
+            if (resetMatrixEnabled) {
+                if (gamepad2.xWasPressed()) {
+                    robot.emergency.resetX();        // Recalibrate X axis absolute coordinate flush against perimeter wall
+                }
+                if (gamepad2.yWasPressed()) {
+                    robot.emergency.resetY();        // Recalibrate Y axis absolute coordinate flush against perimeter wall
+                }
+                if (gamepad2.bWasPressed()) {
+                    robot.emergency.resetHeading();  // Recalibrate absolute orientation/theta parameter via coplanar reference
+                }
+            }
 
-        // Isolated Hardware Servo Component Adjustments
-        if (gamepad2.left_trigger > 0.5)     robot.emergency.forceStopperOpen();
-        if (gamepad2.right_trigger > 0.5)    robot.emergency.forceStopperClose();
+            // --- STANDARD DIAGNOSTIC OPERATIONS ZONE ---
+            // Accessible via standard safety matrix authorization (Left Trigger held independently)
 
-        // Isolated Internal Indexing Roller Overrides
-        if (gamepad2.rightBumperWasPressed()) robot.emergency.forceIndexerStart();
-        if (gamepad2.leftBumperWasPressed())  robot.emergency.forceIndexerStop();
+            // Manual Turret Alignment Fine Tuning Adjustment Arrays via D-Pad Horizontal Axes
+            if (gamepad2.dpadLeftWasPressed())   robot.emergency.changeTurretOffset(-1.0);
+            if (gamepad2.dpadRightWasPressed())  robot.emergency.changeTurretOffset(1.0);
+
+            // Reset calibration registers or apply structural homing overrides to the tracking turret assembly
+            if (gamepad2.dpadDownWasPressed())   robot.emergency.resetTurretOffset();
+            if (gamepad2.dpadUpWasPressed())     robot.emergency.forceTurretToZero();
+
+            // Isolated Internal Indexing Roller Mechanical Manual Overrides
+            if (gamepad2.rightBumperWasPressed()) robot.emergency.forceIndexerStart();
+            if (gamepad2.leftBumperWasPressed())  robot.emergency.forceIndexerStop();
+
+            // Isolated Hardware Servo Component Adjustments (Re-mapped to prevent trigger cross-talk conflicts)
+            if (gamepad2.aWasPressed())          robot.emergency.forceStopperOpen();
+            if (gamepad2.backWasPressed())       robot.emergency.forceStopperClose();
+        }
 
 
         // =========================================================================
@@ -136,6 +154,7 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));
         telemetry.addData("distance",   "%.2f in", robot.getFollower().getPose().distanceFrom(robot.getGoalPose()));
         telemetry.addData("turret offset", "%.1f°", robot.emergency.getTurretOffset());
+        telemetry.addData("safety lock", safetyMatrixEnabled ? (resetMatrixEnabled ? "UNLOCKED (RESET ENABLED)" : "DIAGNOSTICS ONLY") : "LOCKED");
         telemetry.update();
     }
 }
