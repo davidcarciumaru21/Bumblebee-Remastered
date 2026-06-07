@@ -172,8 +172,8 @@ public class SubsystemsConfig {
      * WIDTH  — Distance across the left-to-right side-to-side footprint.
      */
     public static final class RobotDimensions {
-        public static final double LENGTH = 17.5;
-        public static final double WIDTH  = 17.5;
+        public static final double LENGTH = 17.20;
+        public static final double WIDTH  = 14.33;
     }
 
     /**
