@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Deflector;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
@@ -40,6 +41,7 @@ public class Robot {
     private final Deflector     deflector;
     private final Flywheel      flywheel;
     private final Turret        turret;
+    private final Limelight     limelight;
 
     // High-level subsystem state machine managers
     private final IntakingManager intakingManager;
@@ -69,6 +71,7 @@ public class Robot {
         deflector     = new Deflector(hardwareMap);
         flywheel      = new Flywheel(hardwareMap, voltageSensor);
         turret        = new Turret(hardwareMap);
+        limelight     = new Limelight(hardwareMap);
 
         // Build the Pedro Pathing follower module from static configuration bindings
         follower = Constants.createFollower(hardwareMap);
@@ -125,6 +128,7 @@ public class Robot {
     public AllianceColor getAllianceColor()     { return allianceColor; }
     public Follower      getFollower()          { return follower; }
     public Pose          getGoalPose()          { return goalPose; }
+    public Limelight     getLimelight()         { return limelight; }
 
     /**
      * Runs localized updates across subsystems, tracking routines, and target calculations.
@@ -133,6 +137,9 @@ public class Robot {
     public void update() {
         // Read voltage first to ensure tracking data feeds clean conversion models
         voltageSensor.update();
+
+        // Cache the latest vision frame for optional driver-triggered relocalization
+        limelight.update();
 
         // Process dead-wheel tracking metrics and compute active coordinate drift
         follower.update();
@@ -232,6 +239,21 @@ public class Robot {
             Pose current = follower.getPose();
             double targetHeading = 0.0;
             follower.setPose(new Pose(current.getX(), current.getY(), targetHeading));
+        }
+
+        /**
+         * Uses the latest valid Limelight botpose to relocalize Pedro Pathing.
+         * @return true if the follower pose was updated.
+         */
+        public boolean resetPoseFromLimelight() {
+            limelight.update();
+            Pose limelightPose = limelight.getPose();
+            if (limelightPose == null) {
+                return false;
+            }
+
+            follower.setPose(limelightPose);
+            return true;
         }
 
         // --- Low-Level Isolated Hardware Hardware Manual Overrides ---

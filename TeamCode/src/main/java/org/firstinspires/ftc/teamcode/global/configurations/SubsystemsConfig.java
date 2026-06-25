@@ -205,4 +205,17 @@ public class SubsystemsConfig {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
     }
+
+    /**
+     * Limelight camera configuration.
+     * Used for AprilTag/global-pose relocalization into Pedro Pathing field coordinates.
+     */
+    public static final class Limelight {
+        public static final String HARDWARE_MAP_NAME = "limelight";
+        public static final int DEFAULT_PIPELINE = 0;
+        public static final double METERS_TO_INCHES = 39.3701;
+        public static final double PEDRO_FIELD_CENTER_OFFSET_INCHES = 72.0;
+        public static final double MAX_VALID_Z_ERROR_INCHES = 6.0;
+        public static final double FILTER_ALPHA = 0.25;
+    }
 }

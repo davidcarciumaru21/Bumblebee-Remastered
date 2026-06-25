@@ -16,6 +16,8 @@ public class MainTeleOp extends OpMode {
 
     private Robot   robot;
     private boolean fieldCentric = true;
+    private boolean previousGamepad2RightStickButton = false;
+    private String  limelightResetStatus = "not requested";
 
     @Override
     public void init() {
@@ -98,6 +100,7 @@ public class MainTeleOp extends OpMode {
         // Establish binary evaluation registers for the multi-stage hardware safety matrix
         boolean safetyMatrixEnabled = gamepad2.left_trigger > 0.5;
         boolean resetMatrixEnabled  = gamepad2.left_trigger > 0.5 && gamepad2.right_trigger > 0.5;
+        boolean limelightResetPressed = gamepad2.right_stick_button && !previousGamepad2RightStickButton;
 
         // Subsystem Diagnostic Execution Envelope: Active only when the safety trigger criteria is met
         if (safetyMatrixEnabled) {
@@ -113,6 +116,9 @@ public class MainTeleOp extends OpMode {
                 }
                 if (gamepad2.bWasPressed()) {
                     robot.emergency.resetHeading();  // Recalibrate absolute orientation/theta parameter via coplanar reference
+                }
+                if (limelightResetPressed) {
+                    limelightResetStatus = robot.emergency.resetPoseFromLimelight() ? "applied" : "no valid pose";
                 }
             }
 
@@ -154,7 +160,12 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));
         telemetry.addData("distance",   "%.2f in", robot.getFollower().getPose().distanceFrom(robot.getGoalPose()));
         telemetry.addData("turret offset", "%.1f°", robot.emergency.getTurretOffset());
+        telemetry.addData("limelight target", robot.getLimelight().hasTarget());
+        telemetry.addData("limelight yaw", "%.2f", robot.getLimelight().getYaw());
+        telemetry.addData("limelight reset", limelightResetStatus);
         telemetry.addData("safety lock", safetyMatrixEnabled ? (resetMatrixEnabled ? "UNLOCKED (RESET ENABLED)" : "DIAGNOSTICS ONLY") : "LOCKED");
         telemetry.update();
+
+        previousGamepad2RightStickButton = gamepad2.right_stick_button;
     }
 }
