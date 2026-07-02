@@ -69,7 +69,7 @@ public class ManualTeleOp extends OpMode {
         // drivetrain
         frontLeft  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR_NAME);
         backLeft   = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_LEFT_MOTOR_NAME);
-        frontRight = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FORNT_RIGHT_MOTOR_NAME);
+        frontRight = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.FRONT_RIGHT_MOTOR_NAME);
         backRight  = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Drivetrain.BACK_RIGHT_MOTOR_NAME);
 
         frontLeft.setDirection(SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR_DIRECTION);
@@ -95,7 +95,7 @@ public class ManualTeleOp extends OpMode {
         indexer       = new Indexer(hardwareMap);
         deflector     = new Deflector(hardwareMap);
         stopper       = new Stopper(hardwareMap);
-        turret        = new Turret(hardwareMap, voltageSensor);
+        turret        = new Turret(hardwareMap);
         flywheel      = new Flywheel(hardwareMap, voltageSensor);
     }
 

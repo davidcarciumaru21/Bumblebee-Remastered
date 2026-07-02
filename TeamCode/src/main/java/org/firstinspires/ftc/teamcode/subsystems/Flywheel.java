@@ -94,7 +94,7 @@ public class Flywheel implements Subsystem {
      * @param speed ball speed in inches per second
      */
     public void setSpeedInchesPerSecond(double speed) {
-        this.targetRPM = speed; // TODO: replace with real regression
+        this.targetRPM = 12.32978 * speed - 117.20705;
         this.state     = FlywheelState.RAMPING_UP;
     }
 

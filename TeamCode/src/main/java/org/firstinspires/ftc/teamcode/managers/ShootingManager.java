@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.managers;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfigurations;
+import org.firstinspires.ftc.teamcode.global.configurations.ShootingConfig;
 import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 import org.firstinspires.ftc.teamcode.global.enums.managersEnums.ShootingManagerState;
 import org.firstinspires.ftc.teamcode.subsystems.Deflector;
@@ -42,6 +42,9 @@ public class ShootingManager {
     private ShootingManagerState state = ShootingManagerState.IDLE;
     private final ElapsedTime    timer = new ElapsedTime();
 
+    // emergency flags
+    private boolean turretForcedToZero = false;
+
     public ShootingManager(Flywheel flywheel,
                            Deflector deflector,
                            Turret turret,
@@ -73,6 +76,25 @@ public class ShootingManager {
         }
     }
 
+    // --- emergency overrides ---
+
+    /** Toggles forcing the turret to point straight forward (0 degrees). */
+    public void forceTurretToZero() {
+        this.turretForcedToZero = !this.turretForcedToZero;
+    }
+
+    /** Forces state to IDLE and opens the stopper manually. */
+    public void forceStopperOpen() {
+        this.state = ShootingManagerState.IDLE;
+        stopper.open();
+    }
+
+    /** Forces state to IDLE and closes the stopper manually. */
+    public void forceStopperClose() {
+        this.state = ShootingManagerState.IDLE;
+        stopper.close();
+    }
+
     /** Returns the current state of the shooting manager. */
     public ShootingManagerState getState() { return this.state; }
 
@@ -93,20 +115,20 @@ public class ShootingManager {
                                                            double angleToGoal) {
         double height;
         double scoreAngle;
-        double g = ShootingConfigurations.G;
+        double g = ShootingConfig.G;
 
-        if (distance < ShootingConfigurations.Close.MAX_DISTANCE) {
-            distance  -= ShootingConfigurations.Close.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Close.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Close.SCORE_ANGLE;
-        } else if (distance < ShootingConfigurations.Mid.MAX_DISTANCE) {
-            distance  -= ShootingConfigurations.Mid.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Mid.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Mid.SCORE_ANGLE;
+        if (distance < ShootingConfig.Close.MAX_DISTANCE) {
+            distance  -= ShootingConfig.Close.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Close.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Close.SCORE_ANGLE;
+        } else if (distance < ShootingConfig.Mid.MAX_DISTANCE) {
+            distance  -= ShootingConfig.Mid.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Mid.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Mid.SCORE_ANGLE;
         } else {
-            distance  -= ShootingConfigurations.Far.PASS_THROUGH_RADIUS;
-            height     = ShootingConfigurations.Far.SCORE_HEIGHT;
-            scoreAngle = ShootingConfigurations.Far.SCORE_ANGLE;
+            distance  -= ShootingConfig.Far.PASS_THROUGH_RADIUS;
+            height     = ShootingConfig.Far.SCORE_HEIGHT;
+            scoreAngle = ShootingConfig.Far.SCORE_ANGLE;
         }
 
         // A. calculate initial launch angle and velocity
@@ -149,7 +171,9 @@ public class ShootingManager {
                                 (newDistance * Math.tan(newAngle) - height))
         );
 
-        double turretAngle = angleToGoal + Math.atan(tangentialComponent / vxCompensated);
+        double turretOffset = Math.atan2(tangentialComponent, vxCompensated);
+        double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
+                Math.cos(angleToGoal + turretOffset));
 
         if (Double.isNaN(newAngle) || Double.isNaN(newV0)) {
             deflector.setAngleInRadians(SubsystemsConfig.Deflector.MIN_ANGLE);
@@ -173,7 +197,13 @@ public class ShootingManager {
         // calculate and apply targets constantly regardless of state
         Pair<Double, Double> targets = getTargetAngleAndVelocity(distance, velocityVector, angleToGoal);
 
-        turret.setTargetAngle(Math.toDegrees(targets.first));
+        // override turret targets if emergency force zero is active
+        if (turretForcedToZero) {
+            turret.setTargetAngle(0.0);
+        } else {
+            turret.setTargetAngle(-Math.toDegrees(targets.first));
+        }
+
         flywheel.setSpeedInchesPerSecond(targets.second);
 
         // update subsystems
