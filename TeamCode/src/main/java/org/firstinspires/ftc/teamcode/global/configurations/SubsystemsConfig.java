@@ -124,9 +124,9 @@ public class SubsystemsConfig {
         public static final double TICKS_PER_REV         = 28.0;
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
         public static final double AT_SPEED_TOLERANCE    = 80.0;
-        public static final double KP                    = 0.023;
-        public static final double KS                    = 0.09516;
-        public static final double KV                    = 0.0024;
+        public static final double KP                    = 0.02;
+        public static final double KS                    = 0.054;
+        public static final double KV                    = 0.0022;
     }
 
     /**

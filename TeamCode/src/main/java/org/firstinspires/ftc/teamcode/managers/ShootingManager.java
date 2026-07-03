@@ -172,8 +172,9 @@ public class ShootingManager {
         );
 
         double turretOffset = Math.atan2(tangentialComponent, vxCompensated);
-        double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
-                Math.cos(angleToGoal + turretOffset));
+        //double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
+               // Math.cos(angleToGoal + turretOffset));
+        double turretAngle  = 0;
 
         if (Double.isNaN(newAngle) || Double.isNaN(newV0)) {
             deflector.setAngleInRadians(SubsystemsConfig.Deflector.MIN_ANGLE);

@@ -52,8 +52,9 @@ public class RedTemplateAuto extends OpMode {
     private Follower follower;
     private AutoPaths paths;
 
-    // Fixed Field Target Configuration for Red Alliance Coordinates
-    private final Pose goalPose = ShootingConfig.Goals.RED_GOAL_POSE;
+    // Range-Based Field Target Configuration for Red Alliance Coordinates
+    private final Pose closeMidGoalPose = ShootingConfig.Goals.RED_GOAL_POSE;
+    private final Pose farGoalPose      = ShootingConfig.Goals.RED_FAR_GOAL_POSE;
 
     // Core Low-Level Hardware Subsystem Wrappers
     private Flywheel      flywheel;
@@ -175,7 +176,13 @@ public class RedTemplateAuto extends OpMode {
         // Fetch the instantaneous position tracking pose from the localizer module
         Pose currentPose = follower.getPose();
 
-        // Calculate absolute radial distance vectors to the target high-goal setup
+        // Select the independent Far target once the robot leaves the Close and Mid zones
+        double closeMidDistance = currentPose.distanceFrom(closeMidGoalPose);
+        Pose goalPose = closeMidDistance < ShootingConfig.Mid.MAX_DISTANCE
+                ? closeMidGoalPose
+                : farGoalPose;
+
+        // Calculate absolute radial distance vectors to the selected high-goal setup
         double distance = currentPose.distanceFrom(goalPose);
 
         // Calculate absolute field-centric angular alignment toward the goal structure

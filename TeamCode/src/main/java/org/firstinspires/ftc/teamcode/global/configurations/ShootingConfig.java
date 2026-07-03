@@ -51,20 +51,25 @@ public class ShootingConfig {
      * PASS_THROUGH_RADIUS — horizontal distance before goal where ball must have SCORE_ANGLE.
      */
     public static final class Far {
-        public static final double SCORE_HEIGHT        = 39.0;
-        public static final double SCORE_ANGLE         = Math.toRadians(-5);
-        public static final double PASS_THROUGH_RADIUS = 13.0;
+        public static final double SCORE_HEIGHT        = 45.0;
+        public static final double SCORE_ANGLE         = Math.toRadians(-15);
+        public static final double PASS_THROUGH_RADIUS = -4.0;
     }
 
     /**
      * Goal positions on the field for each alliance.
-     * RED_GOAL_POSE  — position of the goal on the red alliance side.
-     * BLUE_GOAL_POSE — position of the goal on the blue alliance side, mirrored from red.
+     * RED_GOAL_POSE       — Close and Mid target position on the red alliance side.
+     * BLUE_GOAL_POSE      — Close and Mid target position on the blue alliance side, mirrored from red.
+     * RED_FAR_GOAL_POSE   — Far target position on the red alliance side.
+     * BLUE_FAR_GOAL_POSE  — Far target position on the blue alliance side, mirrored from red.
      * Coordinates are in inches, origin at bottom-left corner of the field.
      * Modify these values if the goal position changes between seasons.
      */
     public static final class Goals {
-        public static final Pose RED_GOAL_POSE  = new Pose(138, 138);
-        public static final Pose BLUE_GOAL_POSE = new Pose(138, 138).mirror();
+
+        public static final Pose RED_GOAL_POSE       = new Pose(138, 138);
+        public static final Pose BLUE_GOAL_POSE      = new Pose(138, 138).mirror();
+        public static final Pose RED_FAR_GOAL_POSE   = new Pose(138, 134);
+        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(138, 134).mirror();
     }
 }

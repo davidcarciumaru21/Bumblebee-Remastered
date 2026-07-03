@@ -69,7 +69,7 @@ public class Flywheel implements Subsystem {
         this.motor1 = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Flywheel.MOTOR_NAME_1);
         this.motor2 = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Flywheel.MOTOR_NAME_2);
 
-        this.motor1.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motor1.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motor2.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

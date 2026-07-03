@@ -51,8 +51,10 @@ public class Robot {
     private final Follower follower;
 
     // Dynamic field properties mapped based on selected setup configuration
-    private AllianceColor allianceColor = AllianceColor.BLUE;
-    private Pose          goalPose      = ShootingConfig.Goals.BLUE_GOAL_POSE;
+    private AllianceColor allianceColor    = AllianceColor.BLUE;
+    private Pose          closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
+    private Pose          farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
+    private Pose          goalPose         = closeMidGoalPose;
 
     // Control structural routing abstraction interfaces
     public final DriverControls    driver;
@@ -106,19 +108,24 @@ public class Robot {
 
             // Map alliance structures and establish corresponding high-goal targets
             if (color.equalsIgnoreCase("BLUE")) {
-                allianceColor = AllianceColor.BLUE;
-                goalPose      = ShootingConfig.Goals.BLUE_GOAL_POSE;
+                allianceColor    = AllianceColor.BLUE;
+                closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
+                farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
             } else {
-                allianceColor = AllianceColor.RED;
-                goalPose      = ShootingConfig.Goals.RED_GOAL_POSE;
+                allianceColor    = AllianceColor.RED;
+                closeMidGoalPose = ShootingConfig.Goals.RED_GOAL_POSE;
+                farGoalPose      = ShootingConfig.Goals.RED_FAR_GOAL_POSE;
             }
 
         } catch (IOException e) {
             // Safe fallback defaults: Zero coordinate tracking on the Blue Alliance map
             follower.setStartingPose(new Pose(0, 0, 0));
-            allianceColor = AllianceColor.BLUE;
-            goalPose      = ShootingConfig.Goals.BLUE_GOAL_POSE;
+            allianceColor    = AllianceColor.BLUE;
+            closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
+            farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
         }
+
+        goalPose = closeMidGoalPose;
 
         // Initialize teleoperation execution controls inside the localizer module
         follower.startTeleOpDrive();
@@ -147,7 +154,13 @@ public class Robot {
         // Fetch the instantaneous position tracking pose from the localizer module
         Pose currentPose = follower.getPose();
 
-        // Calculate absolute radial distance vectors to the target high-goal setup
+        // Select the independent Far target once the robot leaves the Close and Mid zones
+        double closeMidDistance = currentPose.distanceFrom(closeMidGoalPose);
+        goalPose = closeMidDistance < ShootingConfig.Mid.MAX_DISTANCE
+                ? closeMidGoalPose
+                : farGoalPose;
+
+        // Calculate absolute radial distance vectors to the selected high-goal setup
         double distance = currentPose.distanceFrom(goalPose);
 
         // Calculate absolute field-centric angular alignment toward the goal structure
