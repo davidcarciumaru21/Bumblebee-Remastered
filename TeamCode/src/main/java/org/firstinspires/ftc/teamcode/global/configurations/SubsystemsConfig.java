@@ -74,8 +74,8 @@ public class SubsystemsConfig {
         public static final String SERVO_NAME       = "Stopper";
         public static final double OPEN_POSITION    = 0.15;
         public static final double CLOSED_POSITION  = 0.625;
-        public static final double TIME_TO_OPEN_MS  = 150;
-        public static final double TIME_TO_CLOSE_MS = 150;
+        public static final double TIME_TO_OPEN_MS  = 250;
+        public static final double TIME_TO_CLOSE_MS = 250;
     }
 
     /**
@@ -102,7 +102,7 @@ public class SubsystemsConfig {
      */
     public static final class LockedTurret {
         public static final String SERVO_NAME      = "servo";
-        public static final double LOCKED_POSITION = 0.7;
+        public static final double LOCKED_POSITION = 0.0;
     }
 
     /**
@@ -125,7 +125,7 @@ public class SubsystemsConfig {
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
         public static final double AT_SPEED_TOLERANCE    = 80.0;
         public static final double KP                    = 0.02;
-        public static final double KS                    = 0.054;
+        public static final double KS                    = 0.044;
         public static final double KV                    = 0.0022;
     }
 
@@ -139,8 +139,9 @@ public class SubsystemsConfig {
      */
     public static final class Turret {
         public static final String SERVO_NAME     = "Turret";
-        public static final double MIN_ANGLE      = -130.0;
-        public static final double MAX_ANGLE      = 90.0;
+        public static final String ENCODER_NAME   = "FrontRight";
+        public static final double MIN_ANGLE      = -45.0;
+        public static final double MAX_ANGLE      = 45.0;
         public static final double IDLE_POSITION  = 0.5;
     }
 

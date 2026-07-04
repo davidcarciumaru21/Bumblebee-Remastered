@@ -92,6 +92,15 @@ public class Robot {
      * Automatically coordinates alliance targets and registers initial tracking positions.
      * Safe-guards with default fallbacks if telemetry files are unreadable or missing.
      */
+
+    public double getCurrentTurretPosition() {
+        return turret.getAngle();
+    }
+
+    public double getTargetTurretPosition() {
+        return turret.getAnglePosition();
+    }
+
     public void setPosition() {
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 
@@ -161,7 +170,7 @@ public class Robot {
                 : farGoalPose;
 
         // Calculate absolute radial distance vectors to the selected high-goal setup
-        double distance = currentPose.distanceFrom(goalPose);
+        double distance = currentPose.distanceFrom(goalPose) + 3.932;
 
         // Calculate absolute field-centric angular alignment toward the goal structure
         double globalAngleToGoal = Math.atan2(
@@ -179,7 +188,8 @@ public class Robot {
         angleToGoal = Math.atan2(Math.sin(angleToGoal), Math.cos(angleToGoal));
 
         // Pull active linear translation velocities to calculate lead targeting adjustments
-        Vector velocityVector = follower.poseTracker.getVelocity();
+        Vector velocityVector = follower.poseTracker.getVelocity().copy();
+        velocityVector.rotateVector(-currentPose.getHeading());
 
         // Dispatch targeting computations to the shooting management engine
         shootingManager.update(distance, velocityVector, angleToGoal);

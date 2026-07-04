@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,11 +17,16 @@ import org.firstinspires.ftc.teamcode.utils.MathUtils;
 public class Turret implements Subsystem {
 
     private final Servo turret;
+    private final DcMotor encoder;
+    private double angle;
 
     private TurretState state          = TurretState.IDLE;
     private double      targetPosition = SubsystemsConfig.Turret.IDLE_POSITION;
 
     public Turret(HardwareMap hardwareMap) {
+        this.encoder = hardwareMap.get(DcMotor.class, SubsystemsConfig.Turret.ENCODER_NAME);
+        this.encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.turret = hardwareMap.get(Servo.class, SubsystemsConfig.Turret.SERVO_NAME);
         this.turret.setPosition(SubsystemsConfig.Turret.IDLE_POSITION);
     }
@@ -30,18 +37,24 @@ public class Turret implements Subsystem {
      * the system executes a fail-safe fallback routine, forcing the orientation to 0 degrees.
      * * @param angle Target angular displacement in degrees relative to the chassis forward vector.
      */
-    public void setTargetAngle(double angle) {
 
+    public double getAngle(){
+        double EncoderTicks = encoder.getCurrentPosition();
+        double EncoderDegrees = EncoderTicks / 22.76 / 5.71;
+        return EncoderDegrees;
+    }
+
+    public void setTargetAngle(double angle) {
+        this.angle = angle;
         // Dynamic Boundary Evaluation: Check if the computed tracking vector is out of range
         if (angle < SubsystemsConfig.Turret.MIN_ANGLE || angle > SubsystemsConfig.Turret.MAX_ANGLE) {
             // Prevent mechanical straining or pinning at hardware hard-stops by returning home
             angle = 0.0;
         }
 
-        // Mathematical Model: y = (3.08642 * 10^-7) * x^2 + 0.00163889 * x + 0.5
-        // When angle is forced to 0.0 via the fail-safe above, this cleanly resolves to 0.5 (Center)
+
         this.targetPosition = MathUtils.clamp(
-                (3.08642e-7 * angle * angle) + (0.00163889 * angle) + SubsystemsConfig.Turret.IDLE_POSITION,
+                0.0107467 * angle + 0.5,
                 0.0,
                 1.0
         );
@@ -63,6 +76,8 @@ public class Turret implements Subsystem {
 
     /** Exposes the currently computed target hardware position ready to be pushed downstream. */
     public double getTargetPosition() { return this.targetPosition; }
+
+    public double getAnglePosition() { return this.angle;}
 
     /** Forces the newly calculated position register onto the physical REV expansion hub bus layer. */
     @Override

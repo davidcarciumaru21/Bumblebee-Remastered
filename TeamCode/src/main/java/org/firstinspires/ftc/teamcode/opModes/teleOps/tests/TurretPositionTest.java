@@ -40,6 +40,7 @@ public class TurretPositionTest extends OpMode {
         turret.update();
 
         telemetry.addLine("Turret Position Test");
+        telemetry.addData("current angle", turret.getAngle());
         telemetry.addData("target angle",   "%.1f°", targetAngle);
         telemetry.addData("target position","%.4f",  turret.getTargetPosition());
         telemetry.addData("state",          turret.getState());

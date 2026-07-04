@@ -145,16 +145,16 @@ public class ShootingManager {
         );
 
         // B. velocity compensation
-        double theta               = velocityVector.getTheta() - angleToGoal;
-        double radialComponent     = -Math.cos(theta) * velocityVector.getMagnitude();
-        double tangentialComponent =  Math.sin(theta) * velocityVector.getMagnitude();
+        double theta              = velocityVector.getTheta() - angleToGoal;
+        double radialVelocity     = Math.cos(theta) * velocityVector.getMagnitude();
+        double tangentialVelocity = Math.sin(theta) * velocityVector.getMagnitude();
 
         double vy   = initialV0 * Math.sin(initialAngle);
         double time = distance / (initialV0 * Math.cos(initialAngle));
 
-        double vxCompensated = distance / time + radialComponent;
+        double vxCompensated = distance / time - radialVelocity;
         double vxNew         = Math.sqrt(
-                Math.pow(vxCompensated, 2) + Math.pow(tangentialComponent, 2)
+                Math.pow(vxCompensated, 2) + Math.pow(tangentialVelocity, 2)
         );
 
         double newDistance = vxNew * time;
@@ -171,10 +171,9 @@ public class ShootingManager {
                                 (newDistance * Math.tan(newAngle) - height))
         );
 
-        double turretOffset = Math.atan2(tangentialComponent, vxCompensated);
-        //double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
-               // Math.cos(angleToGoal + turretOffset));
-        double turretAngle  = 0;
+        double turretOffset = Math.atan2(-tangentialVelocity, vxCompensated);
+        double turretAngle  = Math.atan2(Math.sin(angleToGoal + turretOffset),
+               Math.cos(angleToGoal + turretOffset));
 
         if (Double.isNaN(newAngle) || Double.isNaN(newV0)) {
             deflector.setAngleInRadians(SubsystemsConfig.Deflector.MIN_ANGLE);

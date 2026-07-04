@@ -22,7 +22,7 @@ public class ShootingConfig {
      * MAX_DISTANCE        — maximum distance in inches for this zone.
      */
     public static final class Close {
-        public static final double SCORE_HEIGHT        = 39.0;
+        public static final double SCORE_HEIGHT        = 35.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 13.0;
         public static final double MAX_DISTANCE        = 60.0;
@@ -53,7 +53,7 @@ public class ShootingConfig {
     public static final class Far {
         public static final double SCORE_HEIGHT        = 45.0;
         public static final double SCORE_ANGLE         = Math.toRadians(-15);
-        public static final double PASS_THROUGH_RADIUS = -4.0;
+        public static final double PASS_THROUGH_RADIUS = 0.0;
     }
 
     /**
@@ -69,7 +69,7 @@ public class ShootingConfig {
 
         public static final Pose RED_GOAL_POSE       = new Pose(138, 138);
         public static final Pose BLUE_GOAL_POSE      = new Pose(138, 138).mirror();
-        public static final Pose RED_FAR_GOAL_POSE   = new Pose(138, 134);
-        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(138, 134).mirror();
+        public static final Pose RED_FAR_GOAL_POSE   = new Pose(138, 138);
+        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(138, 138).mirror();
     }
 }
