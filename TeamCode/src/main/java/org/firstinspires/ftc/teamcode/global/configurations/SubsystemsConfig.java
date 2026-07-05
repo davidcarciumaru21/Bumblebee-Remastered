@@ -138,11 +138,15 @@ public class SubsystemsConfig {
      * IDLE_POSITION — Hardware home target mapping to 0 degrees relative to the direct centerline of the drive chassis.
      */
     public static final class Turret {
-        public static final String SERVO_NAME     = "Turret";
-        public static final String ENCODER_NAME   = "FrontRight";
-        public static final double MIN_ANGLE      = -45.0;
-        public static final double MAX_ANGLE      = 45.0;
-        public static final double IDLE_POSITION  = 0.5;
+        public static final String SERVO_NAME                   = "Turret";
+        public static final String ENCODER_NAME                 = "FrontRight";
+        public static final double MIN_ANGLE                    = -45.0;
+        public static final double MAX_ANGLE                    = 45.0;
+        public static final double IDLE_POSITION                = 0.5;
+        public static final double ENCODER_TICKS_PER_DEGREE     = 22.76 * 5.71;
+        public static final double ENCODER_KP                   = 0.05;
+        public static final double MAX_SERVO_POSITION_RATE      = 1;
+        public static final double ANGLE_TOLERANCE_DEGREES      = 0.5;
     }
 
     /**

@@ -157,6 +157,8 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("shooting",   robot.driver.isShooting());
         telemetry.addData("Turret Current Angle", robot.getCurrentTurretPosition());
         telemetry.addData("Turret Target Angle", robot.getTargetTurretPosition());
+        telemetry.addData("Turret Angle Error", robot.getTurretError());
+        telemetry.addData("Turret At Position", robot.isTurretAtPosition());
         telemetry.addData("pose x",     "%.2f", robot.getFollower().getPose().getX());
         telemetry.addData("pose y",     "%.2f", robot.getFollower().getPose().getY());
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));

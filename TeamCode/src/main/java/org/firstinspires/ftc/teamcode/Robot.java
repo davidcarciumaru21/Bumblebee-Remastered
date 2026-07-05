@@ -101,6 +101,14 @@ public class Robot {
         return turret.getAnglePosition();
     }
 
+    public double getTurretError() {
+        return turret.getAngleError();
+    }
+
+    public boolean isTurretAtPosition() {
+        return turret.isAtPosition();
+    }
+
     public void setPosition() {
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 
