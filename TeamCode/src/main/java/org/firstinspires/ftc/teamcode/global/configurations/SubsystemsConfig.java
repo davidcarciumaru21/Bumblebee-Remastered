@@ -58,7 +58,7 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER = 1.0;
         public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.2;
+        public static final double                  IDLE_POWER = 0.6;
     }
 
     /**

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOps.tests;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,11 +10,13 @@ import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 @TeleOp(name = "Indexer Test TeleOp", group = "Indexer")
 public class IndexerTest extends OpMode {
 
-    private Indexer indexer;
+    private Indexer          indexer;
+    private TelemetryManager panelsTelemetry;
 
     @Override
     public void init() {
-        indexer = new Indexer(hardwareMap);
+        indexer         = new Indexer(hardwareMap);
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     }
 
     @Override
@@ -25,6 +29,8 @@ public class IndexerTest extends OpMode {
 
         telemetry.addData("state",    indexer.getState());
         telemetry.addData("controls", "A = pull | B = push | X = idle");
-        telemetry.update();
+        panelsTelemetry.addData("Indexer Velocity Ticks Per Second", indexer.getVelocityTicksPerSecond());
+        panelsTelemetry.addData("Indexer Commanded Power", indexer.getPower());
+        panelsTelemetry.update(telemetry);
     }
 }

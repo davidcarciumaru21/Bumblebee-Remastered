@@ -149,6 +149,11 @@ public class ManualTeleOp extends OpMode {
         // turret
         if (gamepad1.dpadRightWasPressed()) turretAngle += TURRET_STEP;
         if (gamepad1.dpadLeftWasPressed())  turretAngle -= TURRET_STEP;
+
+        if (turretAngle < SubsystemsConfig.Turret.MIN_ANGLE || turretAngle > SubsystemsConfig.Turret.MAX_ANGLE) {
+            turretAngle = 0.0;
+        }
+
         turret.setTargetAngle(turretAngle);
 
         // flywheel

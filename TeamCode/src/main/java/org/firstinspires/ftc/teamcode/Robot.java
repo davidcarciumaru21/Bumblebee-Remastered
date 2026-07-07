@@ -109,6 +109,26 @@ public class Robot {
         return turret.isAtPosition();
     }
 
+    public double getFlywheelRPM() {
+        return flywheel.getRPM();
+    }
+
+    public double getFlywheelTargetRPM() {
+        return flywheel.getTargetRPM();
+    }
+
+    public double getIndexerVelocityTicksPerSecond() {
+        return indexer.getVelocityTicksPerSecond();
+    }
+
+    public double getIndexerPower() {
+        return indexer.getPower();
+    }
+
+    public double getVoltage() {
+        return voltageSensor.getVoltage();
+    }
+
     public void setPosition() {
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

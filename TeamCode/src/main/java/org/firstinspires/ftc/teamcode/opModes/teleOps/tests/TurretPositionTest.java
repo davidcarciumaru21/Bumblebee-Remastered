@@ -31,10 +31,9 @@ public class TurretPositionTest extends OpMode {
         if (gamepad1.dpadDownWasPressed()) targetAngle -= STEP;
         if (gamepad1.yWasPressed())        turret.idle();
 
-        targetAngle = Math.max(
-                SubsystemsConfig.Turret.MIN_ANGLE,
-                Math.min(SubsystemsConfig.Turret.MAX_ANGLE, targetAngle)
-        );
+        if (targetAngle < SubsystemsConfig.Turret.MIN_ANGLE || targetAngle > SubsystemsConfig.Turret.MAX_ANGLE) {
+            targetAngle = 0.0;
+        }
 
         turret.setTargetAngle(targetAngle);
         turret.update();

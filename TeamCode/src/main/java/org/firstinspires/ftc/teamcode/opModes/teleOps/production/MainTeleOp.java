@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOps.production;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,7 +16,8 @@ import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
 @TeleOp(name = "Main TeleOp", group = "production")
 public class MainTeleOp extends OpMode {
 
-    private Robot   robot;
+    private Robot            robot;
+    private TelemetryManager panelsTelemetry;
     private boolean fieldCentric = true;
     private boolean previousGamepad2RightStickButton = false;
     private String  limelightResetStatus = "not requested";
@@ -22,7 +25,8 @@ public class MainTeleOp extends OpMode {
     @Override
     public void init() {
         // Instantiate the main control coordination wrapper
-        robot = new Robot(hardwareMap);
+        robot           = new Robot(hardwareMap);
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry.addLine("Robot initialized — waiting for start");
         telemetry.update();
     }
@@ -168,7 +172,14 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("limelight yaw", "%.2f", robot.getLimelight().getYaw());
         telemetry.addData("limelight reset", limelightResetStatus);
         telemetry.addData("safety lock", safetyMatrixEnabled ? (resetMatrixEnabled ? "UNLOCKED (RESET ENABLED)" : "DIAGNOSTICS ONLY") : "LOCKED");
-        telemetry.update();
+
+        // Numeric telemetry channels exposed to the Panels graph plugin
+        panelsTelemetry.addData("Flywheel Target RPM", robot.getFlywheelTargetRPM());
+        panelsTelemetry.addData("Flywheel Current RPM", robot.getFlywheelRPM());
+        panelsTelemetry.addData("Indexer Velocity Ticks Per Second", robot.getIndexerVelocityTicksPerSecond());
+        panelsTelemetry.addData("Indexer Commanded Power", robot.getIndexerPower());
+        panelsTelemetry.addData("Battery Voltage", robot.getVoltage());
+        panelsTelemetry.update(telemetry);
 
         previousGamepad2RightStickButton = gamepad2.right_stick_button;
     }

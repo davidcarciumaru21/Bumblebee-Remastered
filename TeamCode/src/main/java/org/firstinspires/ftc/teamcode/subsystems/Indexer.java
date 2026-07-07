@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.global.configurations.SubsystemsConfig;
@@ -12,12 +13,16 @@ import org.firstinspires.ftc.teamcode.global.enums.subsystemsEnums.IndexerState;
  */
 public class Indexer implements Subsystem {
 
-    private final DcMotor indexer;
+    private final DcMotorEx indexer;
+    private final DcMotorEx indexerEncoder;
     private IndexerState state = IndexerState.IDLE;
     private double customPower = 0.0;
 
     public Indexer(HardwareMap hardwareMap) {
-        this.indexer = hardwareMap.get(DcMotor.class, SubsystemsConfig.Indexer.MOTOR_NAME);
+        this.indexerEncoder = hardwareMap.get(DcMotorEx.class, "BackLeft");
+        this.indexerEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        this.indexer = hardwareMap.get(DcMotorEx.class, SubsystemsConfig.Indexer.MOTOR_NAME);
         this.indexer.setDirection(SubsystemsConfig.Indexer.DIRECTION);
         this.indexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.indexer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -43,6 +48,12 @@ public class Indexer implements Subsystem {
 
     /** Returns the current state of the indexer. */
     public IndexerState getState() { return this.state; }
+
+    /** Returns the signed encoder velocity in ticks per second. */
+    public double getVelocityTicksPerSecond() { return this.indexerEncoder.getVelocity(); }
+
+    /** Returns the power currently applied to the indexer motor. */
+    public double getPower() { return this.indexer.getPower(); }
 
     /** Applies the staged power to hardware. Must be called every loop. */
     @Override

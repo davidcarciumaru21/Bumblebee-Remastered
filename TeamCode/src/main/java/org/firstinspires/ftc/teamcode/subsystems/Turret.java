@@ -43,11 +43,11 @@ public class Turret implements Subsystem {
     }
 
     public void setTargetAngle(double angle) {
-        this.targetAngle = MathUtils.clamp(
-                angle,
-                SubsystemsConfig.Turret.MIN_ANGLE,
-                SubsystemsConfig.Turret.MAX_ANGLE
-        );
+        if (angle < SubsystemsConfig.Turret.MIN_ANGLE || angle > SubsystemsConfig.Turret.MAX_ANGLE) {
+            this.targetAngle = 0.0;
+        } else {
+            this.targetAngle = angle;
+        }
         this.state = TurretState.AT_POSITION;
     }
 

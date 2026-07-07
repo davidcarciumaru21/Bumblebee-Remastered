@@ -51,8 +51,8 @@ public class ShootingConfig {
      * PASS_THROUGH_RADIUS — horizontal distance before goal where ball must have SCORE_ANGLE.
      */
     public static final class Far {
-        public static final double SCORE_HEIGHT        = 45.0;
-        public static final double SCORE_ANGLE         = Math.toRadians(-15);
+        public static final double SCORE_HEIGHT        = 48.0;
+        public static final double SCORE_ANGLE         = Math.toRadians(-10);
         public static final double PASS_THROUGH_RADIUS = 0.0;
     }
 
@@ -67,9 +67,9 @@ public class ShootingConfig {
      */
     public static final class Goals {
 
-        public static final Pose RED_GOAL_POSE       = new Pose(132, 132);
-        public static final Pose BLUE_GOAL_POSE      = RED_GOAL_POSE.mirror();
-        public static final Pose RED_FAR_GOAL_POSE   = new Pose(132, 132);
-        public static final Pose BLUE_FAR_GOAL_POSE  = RED_FAR_GOAL_POSE.mirror();
+        public static final Pose RED_GOAL_POSE       = new Pose(135, 133);
+        public static final Pose BLUE_GOAL_POSE      = new Pose(5, 133);
+        public static final Pose RED_FAR_GOAL_POSE   = new Pose(135, 133);
+        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(5, 133);
     }
 }
