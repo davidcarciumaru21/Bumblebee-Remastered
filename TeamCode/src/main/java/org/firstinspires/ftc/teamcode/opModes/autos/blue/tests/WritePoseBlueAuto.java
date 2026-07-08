@@ -26,9 +26,9 @@ public class WritePoseBlueAuto extends LinearOpMode {
         waitForStart();
 
         JsonObject json = new JsonObject();
-        json.addProperty("x",       17.07057009345795);
-        json.addProperty("y",       117.35514018691589);
-        json.addProperty("heading", Math.toRadians(-37.0));
+        json.addProperty("x",       31.176489096573214);
+        json.addProperty("y",       132.12227414330215);
+        json.addProperty("heading", Math.toRadians(270));
         json.addProperty("color",   "BLUE");
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
@@ -36,9 +36,9 @@ public class WritePoseBlueAuto extends LinearOpMode {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(json.toString());
             telemetry.addLine("BLUE pose written successfully");
-            telemetry.addData("x",       17.07057009345795);
-            telemetry.addData("y",       117.35514018691589);
-            telemetry.addData("heading", "-37.0°");
+            telemetry.addData("x",       31.176489096573214);
+            telemetry.addData("y",       132.5630841121495);
+            telemetry.addData("heading", "-270°");
             telemetry.addData("color",   "BLUE");
             telemetry.addData("file",    file.getAbsolutePath());
         } catch (IOException e) {

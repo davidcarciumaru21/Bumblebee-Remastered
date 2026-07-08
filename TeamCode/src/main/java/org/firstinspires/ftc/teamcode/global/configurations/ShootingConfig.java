@@ -67,9 +67,9 @@ public class ShootingConfig {
      */
     public static final class Goals {
 
-        public static final Pose RED_GOAL_POSE       = new Pose(135, 133);
-        public static final Pose BLUE_GOAL_POSE      = new Pose(5, 133);
-        public static final Pose RED_FAR_GOAL_POSE   = new Pose(135, 133);
-        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(5, 133);
+        public static final Pose RED_GOAL_POSE       = new Pose(137, 138);
+        public static final Pose BLUE_GOAL_POSE      = new Pose(3, 138);
+        public static final Pose RED_FAR_GOAL_POSE   = new Pose(137, 138);
+        public static final Pose BLUE_FAR_GOAL_POSE  = new Pose(3, 138);
     }
 }
