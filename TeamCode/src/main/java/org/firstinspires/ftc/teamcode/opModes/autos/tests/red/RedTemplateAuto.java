@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.blue;
+package org.firstinspires.ftc.teamcode.opModes.autos.tests.red;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -42,19 +42,19 @@ import java.io.IOException;
 /**
  * Deterministic Autonomous routine executing state-guarded command pipelines via the Ivy infrastructure engine.
  * Governs localized trajectory tracking, real-time kinematics/vector tracking, and cross-subsystem coordination
- * for the Blue Alliance perimeter configuration, culminating in an absolute state-serialization handoff.
+ * for the Red Alliance perimeter configuration, culminating in an absolute state-serialization handoff.
  */
 @Disabled
-@Autonomous(name = "Blue Template Auto", group = "Blue")
-public class BlueTemplateAuto extends OpMode {
+@Autonomous(name = "Red Template Auto", group = "Red")
+public class RedTemplateAuto extends OpMode {
 
     // Absolute Tracking & Pathing Infrastructure
     private Follower follower;
     private AutoPaths paths;
 
-    // Range-Based Field Target Configuration for Blue Alliance Coordinates
-    private final Pose closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
-    private final Pose farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
+    // Range-Based Field Target Configuration for Red Alliance Coordinates
+    private final Pose closeMidGoalPose = ShootingConfig.Goals.RED_GOAL_POSE;
+    private final Pose farGoalPose      = ShootingConfig.Goals.RED_FAR_GOAL_POSE;
 
     // Core Low-Level Hardware Subsystem Wrappers
     private Flywheel      flywheel;
@@ -71,7 +71,7 @@ public class BlueTemplateAuto extends OpMode {
 
     /**
      * Isolated trajectory factory. Generates parametric Bézier splines mapped
-     * against absolute boundary thresholds configured for Blue Alliance coordinates.
+     * against mathematically mirrored boundary thresholds for Red Alliance coordinates.
      */
     public static class AutoPaths {
         public final PathChain startToPreloadShoot;
@@ -81,20 +81,20 @@ public class BlueTemplateAuto extends OpMode {
             // Path 1: Dispatches lateral translation vectors to advance the chassis to the optimal preload clearing zone
             startToPreloadShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(17.951, 118.677),
-                            new Pose(45.000, 112.000)
+                            new Pose(17.951, 25.322),
+                            new Pose(45.000, 32.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-37), Math.toRadians(-37))
+                    .setLinearHeadingInterpolation(Math.toRadians(37), Math.toRadians(37))
                     .build();
 
             // Path 2: Executes a coordinated rotational sweep to profile and ingest elements from the horizontal array
             shootToLineIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(45.000, 112.000),
-                            new Pose(52.000, 95.000),
-                            new Pose(16.500, 84.000)
+                            new Pose(45.000, 32.000),
+                            new Pose(52.000, 49.000),
+                            new Pose(16.500, 60.000)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-37), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(37), Math.toRadians(180))
                     .build();
         }
     }
@@ -107,7 +107,7 @@ public class BlueTemplateAuto extends OpMode {
     public void init() {
         // Enforce structural tracking initialization via static follower profiles
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(17.951, 118.677, Math.toRadians(-37)));
+        follower.setStartingPose(new Pose(17.951, 25.322, Math.toRadians(37)));
         follower.update();
 
         // Instantiate isolated physical subsystem control registers
@@ -219,7 +219,7 @@ public class BlueTemplateAuto extends OpMode {
         json.addProperty("x",       endPose.getX());
         json.addProperty("y",       endPose.getY());
         json.addProperty("heading", endPose.getHeading());
-        json.addProperty("color",   "BLUE");
+        json.addProperty("color",   "RED");
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

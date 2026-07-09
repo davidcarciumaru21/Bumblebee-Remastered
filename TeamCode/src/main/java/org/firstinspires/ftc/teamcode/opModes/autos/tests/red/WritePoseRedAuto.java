@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.red.tests;
+package org.firstinspires.ftc.teamcode.opModes.autos.tests.red;
 
 import com.google.gson.JsonObject;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
