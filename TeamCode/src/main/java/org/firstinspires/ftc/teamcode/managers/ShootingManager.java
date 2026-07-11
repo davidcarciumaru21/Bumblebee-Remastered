@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.utils.Pair;
  * 4. Return turret angle (angleToGoal + turretOffset) and launch speed.
  *
  * State machine:
- * - IDLE            — stopper closed, intaking manager idle
+ * - IDLE            — stopper closed, intake left to caller control
  * - ELEVATE_STOPPER — stopper opens, waits TIME_TO_OPEN_MS then transitions to SHOOTING
  * - SHOOTING        — intaking manager shoot pull, continues until stop() is called
  * - CLOSE_STOPPER   — stopper closes, intaking manager idle, waits TIME_TO_CLOSE_MS then IDLE
@@ -216,7 +216,6 @@ public class ShootingManager {
         // state machine
         switch (state) {
             case IDLE:
-                intakingManager.idle();
                 break;
 
             case ELEVATE_STOPPER:

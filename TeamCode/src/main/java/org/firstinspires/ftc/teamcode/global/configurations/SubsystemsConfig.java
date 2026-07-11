@@ -122,6 +122,7 @@ public class SubsystemsConfig {
         public static final String MOTOR_NAME_2          = "FlywheelMotor2";
         public static final double IDLE_POWER            = 0.0;
         public static final double TICKS_PER_REV         = 28.0;
+        public static final double THREE_BALL_SHOT_TIME_MS = 900.0;
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
         public static final double AT_SPEED_TOLERANCE    = 80.0;
         public static final double KP                    = 0.02;

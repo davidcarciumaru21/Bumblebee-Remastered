@@ -198,7 +198,7 @@ public class Robot {
                 : farGoalPose;
 
         // Calculate absolute radial distance vectors to the selected high-goal setup
-        double distance = currentPose.distanceFrom(goalPose) + 3.932;
+        double distance = currentPose.distanceFrom(goalPose) - 3.932;
 
         // Calculate absolute field-centric angular alignment toward the goal structure
         double globalAngleToGoal = Math.atan2(
