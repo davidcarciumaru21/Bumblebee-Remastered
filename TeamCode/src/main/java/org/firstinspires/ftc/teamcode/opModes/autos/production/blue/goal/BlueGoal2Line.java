@@ -38,12 +38,14 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static org.firstinspires.ftc.teamcode.utils.AutoTimeouts.*;
+import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
 @Autonomous(name = "Blue Goal 2 Line", group = "Blue")
 public class BlueGoal2Line extends OpMode {
 
     private static final Pose START_POSE = new Pose(31.176, 132.122, Math.toRadians(270.0));
+    private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 5000.0;
 
     private Follower follower;
     private AutoPaths paths;

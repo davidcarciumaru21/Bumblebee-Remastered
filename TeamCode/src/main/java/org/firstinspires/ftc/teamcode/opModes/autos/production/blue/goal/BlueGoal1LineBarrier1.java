@@ -38,7 +38,7 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static org.firstinspires.ftc.teamcode.utils.AutoTimeouts.*;
+import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
 @Autonomous(name = "Blue Goal 1 Line Barrier 1", group = "Blue")
 public class BlueGoal1LineBarrier1 extends OpMode {
@@ -46,6 +46,9 @@ public class BlueGoal1LineBarrier1 extends OpMode {
     private static final Pose START_POSE = new Pose(31.176, 132.122, Math.toRadians(270.0));
     private static final double LINE_INTAKE_POWER = 0.5;
     private static final double BARRIER_INTAKE_POWER = 0.8;
+    private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 5000.0;
+    private static final double BARRIER_INTAKE_TIMEOUT_MS = 5000.0;
 
     private Follower follower;
     private AutoPaths paths;
