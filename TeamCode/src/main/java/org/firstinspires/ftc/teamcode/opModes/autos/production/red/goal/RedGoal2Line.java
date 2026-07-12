@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.red;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.red.goal;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -92,14 +92,14 @@ public class RedGoal2Line extends OpMode {
             firstLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
                             mirroredPoint(40.093, 82.500),
-                            mirroredPoint(21.000, 82.500)
+                            mirroredPoint(19.000, 82.500)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
                     .build();
 
             firstLineToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(21.000, 82.500),
+                            mirroredPoint(19.000, 82.500),
                             mirroredPoint(55.400, 82.500)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(137.0))
@@ -117,14 +117,14 @@ public class RedGoal2Line extends OpMode {
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
                             mirroredPoint(40.093, 58.550),
-                            mirroredPoint(9.929, 58.550)
+                            mirroredPoint(14, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
                     .build();
 
             secondLineToShoot = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            mirroredPoint(9.929, 58.550),
+                            mirroredPoint(14, 54.362138284021114),
                             mirroredPoint(55.264, 57.301),
                             mirroredPoint(55.400, 82.500)
                     ))
@@ -220,7 +220,8 @@ public class RedGoal2Line extends OpMode {
                 ? closeMidGoalPose
                 : farGoalPose;
 
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
         double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()

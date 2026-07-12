@@ -58,7 +58,7 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER = 1.0;
         public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.6;
+        public static final double                  IDLE_POWER = 0.3;
     }
 
     /**
@@ -168,6 +168,7 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction BACK_RIGHT_MOTOR_DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  X_VELOCITY                  = 79.7768;
         public static final double                  Y_VELOCITY                  = 64.4725;
+        public static final double                  MAX_POWER                   = 1.0;
         public static final double                  SLOW_MODE_COEFFICIENT       = 0.40;
     }
 
@@ -180,6 +181,7 @@ public class SubsystemsConfig {
     public static final class RobotDimensions {
         public static final double LENGTH = 17.20;
         public static final double WIDTH  = 14.33;
+        public static final double TurreToCenterDistance = 0;
     }
 
     /**

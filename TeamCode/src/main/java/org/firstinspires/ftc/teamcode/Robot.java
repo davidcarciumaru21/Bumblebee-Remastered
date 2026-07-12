@@ -198,7 +198,8 @@ public class Robot {
                 : farGoalPose;
 
         // Calculate absolute radial distance vectors to the selected high-goal setup
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
 
         // Calculate absolute field-centric angular alignment toward the goal structure
         double globalAngleToGoal = Math.atan2(
@@ -220,6 +221,7 @@ public class Robot {
         velocityVector.rotateVector(-currentPose.getHeading());
 
         // Dispatch targeting computations to the shooting management engine
+        shootingManager.setTurretClampFallbackAngle(emergency.getTurretClampFallbackAngle());
         shootingManager.update(distance, velocityVector, angleToGoal);
     }
 
@@ -254,6 +256,8 @@ public class Robot {
         public void changeTurretOffset(double deltaDegrees) { this.turretOffsetDegrees += deltaDegrees; }
         public void resetTurretOffset()                     { this.turretOffsetDegrees = 0.0; }
         public double getTurretOffset()                     { return this.turretOffsetDegrees; }
+        public boolean isTurretForcedToZero()               { return shootingManager.isTurretForcedToZero(); }
+        private double getTurretClampFallbackAngle()         { return -this.turretOffsetDegrees; }
 
         // --- Turret Overrides ---
         public void forceTurretToZero()                     { shootingManager.forceTurretToZero(); }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.blue;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.blue.goal;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -38,6 +38,7 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.utils.AutoTimeouts.*;
 
 @Autonomous(name = "Blue Goal 3 Line", group = "Blue")
 public class BlueGoal3Line extends OpMode {
@@ -94,14 +95,14 @@ public class BlueGoal3Line extends OpMode {
             firstLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(40.093, 82.500),
-                            new Pose(21.000, 82.500)
+                            new Pose(19.000, 82.500)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             firstLineToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(21.000, 82.500),
+                            new Pose(19.000, 82.500),
                             new Pose(55.400, 82.500)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(137.0))
@@ -110,7 +111,7 @@ public class BlueGoal3Line extends OpMode {
             firstShootToSecondLineApproach = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             new Pose(55.400, 82.500),
-                            new Pose(55.500, 57.526),
+                            new Pose(55.542, 57.526),
                             new Pose(40.093, 58.550)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(137.0), Math.toRadians(180.0))
@@ -119,15 +120,15 @@ public class BlueGoal3Line extends OpMode {
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(40.093, 58.550),
-                            new Pose(9.929, 58.550)
+                            new Pose(14, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             secondLineToShoot = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(9.929, 58.550),
-                            new Pose(55.500, 57.526),
+                            new Pose(14, 54.362138284021114),
+                            new Pose(55.264, 57.301),
                             new Pose(55.400, 82.500)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(137.0))
@@ -145,7 +146,7 @@ public class BlueGoal3Line extends OpMode {
             thirdLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(40.093, 34.846),
-                            new Pose(9.929, 34.649)
+                            new Pose(14, 34.649)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
@@ -190,22 +191,22 @@ public class BlueGoal3Line extends OpMode {
     public void start() {
         schedule(
                 sequential(
-                        follow(follower, paths.startToPreloadShoot),
+                        followWithTimeout(follower, paths.startToPreloadShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.preloadShootToFirstLineApproach),
+                        followWithTimeout(follower, paths.preloadShootToFirstLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.firstLineIntake),
-                        follow(follower, paths.firstLineToShoot),
+                        followWithTimeout(follower, paths.firstLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.firstShootToSecondLineApproach),
+                        followWithTimeout(follower, paths.firstShootToSecondLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.secondLineIntake),
-                        follow(follower, paths.secondLineToShoot),
+                        followWithTimeout(follower, paths.secondLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.secondShootToThirdLineApproach),
+                        followWithTimeout(follower, paths.secondShootToThirdLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.thirdLineIntake),
-                        follow(follower, paths.thirdLineToShoot),
+                        followWithTimeout(follower, paths.thirdLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
         );
@@ -230,7 +231,7 @@ public class BlueGoal3Line extends OpMode {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        follow(follower, path, false, 0.5)
+                        followWithTimeout(follower, path, false, 0.5, LINE_INTAKE_TIMEOUT_MS)
                 ),
                 instant(() -> intakingManager.idle())
         );
@@ -253,7 +254,8 @@ public class BlueGoal3Line extends OpMode {
                 ? closeMidGoalPose
                 : farGoalPose;
 
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
         double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()

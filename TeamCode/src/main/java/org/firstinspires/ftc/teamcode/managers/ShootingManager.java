@@ -44,6 +44,7 @@ public class ShootingManager {
 
     // emergency flags
     private boolean turretForcedToZero = false;
+    private double turretClampFallbackAngle = 0.0;
 
     public ShootingManager(Flywheel flywheel,
                            Deflector deflector,
@@ -81,6 +82,18 @@ public class ShootingManager {
     /** Toggles forcing the turret to point straight forward (0 degrees). */
     public void forceTurretToZero() {
         this.turretForcedToZero = !this.turretForcedToZero;
+    }
+
+    public boolean isTurretForcedToZero() {
+        return turretForcedToZero;
+    }
+
+    public void setTurretClampFallbackAngle(double angleDegrees) {
+        this.turretClampFallbackAngle = MathUtils.clamp(
+                angleDegrees,
+                SubsystemsConfig.Turret.MIN_ANGLE,
+                SubsystemsConfig.Turret.MAX_ANGLE
+        );
     }
 
     /** Forces state to IDLE and opens the stopper manually. */
@@ -201,7 +214,7 @@ public class ShootingManager {
         if (turretForcedToZero) {
             turret.setTargetAngle(0.0);
         } else {
-            turret.setTargetAngle(-Math.toDegrees(targets.first));
+            turret.setTargetAngle(-Math.toDegrees(targets.first), turretClampFallbackAngle);
         }
 
         flywheel.setSpeedInchesPerSecond(targets.second);

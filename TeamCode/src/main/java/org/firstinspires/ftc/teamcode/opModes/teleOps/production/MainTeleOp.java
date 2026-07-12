@@ -130,8 +130,8 @@ public class MainTeleOp extends OpMode {
             // Accessible via standard safety matrix authorization (Left Trigger held independently)
 
             // Manual Turret Alignment Fine Tuning Adjustment Arrays via D-Pad Horizontal Axes
-            if (gamepad2.dpadLeftWasPressed())   robot.emergency.changeTurretOffset(-1.0);
-            if (gamepad2.dpadRightWasPressed())  robot.emergency.changeTurretOffset(1.0);
+            if (gamepad2.dpadLeftWasPressed())   robot.emergency.changeTurretOffset(1.0);
+            if (gamepad2.dpadRightWasPressed())  robot.emergency.changeTurretOffset(-1.0);
 
             // Reset calibration registers or apply structural homing overrides to the tracking turret assembly
             if (gamepad2.dpadDownWasPressed())   robot.emergency.resetTurretOffset();
@@ -163,6 +163,7 @@ public class MainTeleOp extends OpMode {
         telemetry.addData("Turret Target Angle", robot.getTargetTurretPosition());
         telemetry.addData("Turret Angle Error", robot.getTurretError());
         telemetry.addData("Turret At Position", robot.isTurretAtPosition());
+        telemetry.addData("Turret Zero Lock", robot.emergency.isTurretForcedToZero());
         telemetry.addData("pose x",     "%.2f", robot.getFollower().getPose().getX());
         telemetry.addData("pose y",     "%.2f", robot.getFollower().getPose().getY());
         telemetry.addData("pose h",     "%.2f°", Math.toDegrees(robot.getFollower().getPose().getHeading()));

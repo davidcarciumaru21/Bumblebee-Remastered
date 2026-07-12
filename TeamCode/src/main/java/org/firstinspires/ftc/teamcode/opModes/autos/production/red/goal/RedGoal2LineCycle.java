@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.red;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.red.goal;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.ivy.groups.Groups;
 import com.pedropathing.math.Vector;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -40,10 +41,12 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-@Autonomous(name = "Red Goal 3 Line", group = "Red")
-public class RedGoal3Line extends OpMode {
+@Autonomous(name = "Red Goal 2 Line Cycle", group = "Red")
+public class RedGoal2LineCycle extends OpMode {
 
     private static final Pose START_POSE = mirroredPose(31.176, 132.122, 270.0);
+    private static final double LINE_INTAKE_POWER = 0.5;
+    private static final double BARRIER_INTAKE_POWER = 0.8;
 
     private Follower follower;
     private AutoPaths paths;
@@ -70,9 +73,10 @@ public class RedGoal3Line extends OpMode {
         public final PathChain firstShootToSecondLineApproach;
         public final PathChain secondLineIntake;
         public final PathChain secondLineToShoot;
-        public final PathChain secondShootToThirdLineApproach;
-        public final PathChain thirdLineIntake;
-        public final PathChain thirdLineToShoot;
+        public final PathChain cycleShootToSecondLineApproach;
+        public final PathChain cycleLineToBarrier;
+        public final PathChain barrierToCollecting;
+        public final PathChain cycleBarrierToShoot;
 
         public AutoPaths(Follower follower) {
             startToPreloadShoot = follower.pathBuilder()
@@ -111,53 +115,62 @@ public class RedGoal3Line extends OpMode {
             firstShootToSecondLineApproach = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             mirroredPoint(55.400, 82.500),
-                            mirroredPoint(55.500, 57.526),
-                            mirroredPoint(40.093, 58.550)
+                            mirroredPoint(55.542, 57.526),
+                            mirroredPoint(40.093, 54.550)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(137.0), mirroredHeading(180.0))
                     .build();
 
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(40.093, 58.550),
-                            mirroredPoint(9.929, 58.550)
+                            mirroredPoint(40.093, 54.550),
+                            mirroredPoint(14, 54.550)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
                     .build();
 
             secondLineToShoot = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            mirroredPoint(9.929, 58.550),
-                            mirroredPoint(55.500, 57.526),
+                            mirroredPoint(12.929, 54.550),
+                            mirroredPoint(55.264, 57.301),
                             mirroredPoint(55.400, 82.500)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(137.0))
                     .build();
 
-            secondShootToThirdLineApproach = follower.pathBuilder()
+            cycleShootToSecondLineApproach = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             mirroredPoint(55.400, 82.500),
-                            mirroredPoint(60.002, 33.633),
-                            mirroredPoint(40.093, 34.846)
+                            mirroredPoint(55.542, 57.526),
+                            mirroredPoint(40.093, 70.550)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(137.0), mirroredHeading(180.0))
                     .build();
 
-            thirdLineIntake = follower.pathBuilder()
+            cycleLineToBarrier = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(40.093, 34.846),
-                            mirroredPoint(9.929, 34.649)
+                            mirroredPoint(40.093, 70.550),
+                            mirroredPoint(20.230, 70.385)
                     ))
+                    .setTValueConstraint(0.5)
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
                     .build();
 
-            thirdLineToShoot = follower.pathBuilder()
+            barrierToCollecting = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            mirroredPoint(15.89797507788162, 60.27554517133957),
+                            mirroredPoint(9.5, 42.60825545171338)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(180), mirroredHeading(90))
+                    .build();
+
+            cycleBarrierToShoot = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            mirroredPoint(9.929, 34.649),
-                            mirroredPoint(60.002, 33.633),
+                            mirroredPoint(9.274143302180683, 42.51401869158879),
+                            mirroredPoint(55.542, 57.526),
                             mirroredPoint(55.400, 82.500)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(137.0))
+                    .setLinearHeadingInterpolation(mirroredHeading(90), mirroredHeading(137.0))
                     .build();
         }
     }
@@ -195,19 +208,24 @@ public class RedGoal3Line extends OpMode {
                         shootThreeBalls(),
 
                         follow(follower, paths.preloadShootToFirstLineApproach),
-                        collectLine(paths.firstLineIntake),
+                        collectLine(paths.firstLineIntake, LINE_INTAKE_POWER),
                         follow(follower, paths.firstLineToShoot),
                         shootThreeBalls(),
 
                         follow(follower, paths.firstShootToSecondLineApproach),
-                        collectLine(paths.secondLineIntake),
+                        collectLine(paths.secondLineIntake, LINE_INTAKE_POWER),
                         follow(follower, paths.secondLineToShoot),
                         shootThreeBalls(),
 
-                        follow(follower, paths.secondShootToThirdLineApproach),
-                        collectLine(paths.thirdLineIntake),
-                        follow(follower, paths.thirdLineToShoot),
-                        shootThreeBalls()
+                        Groups.loop(
+                                sequential(
+                                        follow(follower, paths.cycleShootToSecondLineApproach),
+                                        follow(follower, paths.cycleLineToBarrier),
+                                        collectLine(paths.barrierToCollecting, BARRIER_INTAKE_POWER),
+                                        follow(follower, paths.cycleBarrierToShoot),
+                                        shootThreeBalls()
+                                )
+                        )
                 )
         );
     }
@@ -227,11 +245,11 @@ public class RedGoal3Line extends OpMode {
         Scheduler.reset();
     }
 
-    private Command collectLine(PathChain path) {
+    private Command collectLine(PathChain path, double maxPower) {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        follow(follower, path, false, 0.5)
+                        follow(follower, path, false, maxPower)
                 ),
                 instant(() -> intakingManager.idle())
         );
@@ -254,7 +272,8 @@ public class RedGoal3Line extends OpMode {
                 ? closeMidGoalPose
                 : farGoalPose;
 
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
         double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.blue;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.blue.goal;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -38,6 +38,7 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.utils.AutoTimeouts.*;
 
 @Autonomous(name = "Blue Goal 1 Line", group = "Blue")
 public class BlueGoal1Line extends OpMode {
@@ -132,17 +133,17 @@ public class BlueGoal1Line extends OpMode {
     public void start() {
         schedule(
                 sequential(
-                        follow(follower, paths.startToPreloadShoot),
+                        followWithTimeout(follower, paths.startToPreloadShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.preloadShootToFirstLineApproach),
+                        followWithTimeout(follower, paths.preloadShootToFirstLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         parallel(
                                 instant(() -> intakingManager.pull()),
-                                follow(follower, paths.firstLineIntake, false, 0.5)
+                                followWithTimeout(follower, paths.firstLineIntake, false, 0.5, LINE_INTAKE_TIMEOUT_MS)
                         ),
                         instant(() -> intakingManager.idle()),
 
-                        follow(follower, paths.firstLineToShoot),
+                        followWithTimeout(follower, paths.firstLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
         );
@@ -180,7 +181,8 @@ public class BlueGoal1Line extends OpMode {
                 ? closeMidGoalPose
                 : farGoalPose;
 
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
         double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()

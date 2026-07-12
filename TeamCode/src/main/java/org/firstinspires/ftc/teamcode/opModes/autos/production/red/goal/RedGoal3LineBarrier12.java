@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.red;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.red.goal;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -40,10 +40,12 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-@Autonomous(name = "Red Goal 1 Line", group = "Red")
-public class RedGoal1Line extends OpMode {
+@Autonomous(name = "Red Goal 3 Line Barrier 12", group = "Red")
+public class RedGoal3LineBarrier12 extends OpMode {
 
     private static final Pose START_POSE = mirroredPose(31.176, 132.122, 270.0);
+    private static final double LINE_INTAKE_POWER = 0.5;
+    private static final double BARRIER_INTAKE_POWER = 0.8;
 
     private Follower follower;
     private AutoPaths paths;
@@ -66,7 +68,15 @@ public class RedGoal1Line extends OpMode {
         public final PathChain startToPreloadShoot;
         public final PathChain preloadShootToFirstLineApproach;
         public final PathChain firstLineIntake;
-        public final PathChain firstLineToShoot;
+        public final PathChain firstLineToBarrier;
+        public final PathChain firstBarrierToShoot;
+        public final PathChain firstShootToSecondLineApproach;
+        public final PathChain secondLineIntake;
+        public final PathChain secondLineToBarrier;
+        public final PathChain secondBarrierToShoot;
+        public final PathChain secondShootToThirdLineApproach;
+        public final PathChain thirdLineIntake;
+        public final PathChain thirdLineToShoot;
 
         public AutoPaths(Follower follower) {
             startToPreloadShoot = follower.pathBuilder()
@@ -94,9 +104,78 @@ public class RedGoal1Line extends OpMode {
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
                     .build();
 
-            firstLineToShoot = follower.pathBuilder()
-                    .addPath(new BezierLine(
+            firstLineToBarrier = follower.pathBuilder()
+                    .addPath(new BezierCurve(
                             mirroredPoint(21.000, 82.500),
+                            mirroredPoint(27.359, 71.718),
+                            mirroredPoint(15.865, 70.584)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(90.0))
+                    .build();
+
+            firstBarrierToShoot = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            mirroredPoint(15.865, 70.584),
+                            mirroredPoint(55.400, 82.500)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(90.0), mirroredHeading(137.0))
+                    .build();
+
+            firstShootToSecondLineApproach = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            mirroredPoint(55.400, 82.500),
+                            mirroredPoint(55.542, 57.526),
+                            mirroredPoint(40.093, 55.550)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(137.0), mirroredHeading(180.0))
+                    .build();
+
+            secondLineIntake = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            mirroredPoint(40.093, 58.550),
+                            mirroredPoint(14, 58.550)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
+                    .build();
+
+            secondLineToBarrier = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            mirroredPoint(11.929, 58.550),
+                            mirroredPoint(48.065, 56.067),
+                            mirroredPoint(17.230, 70.385)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(90.0))
+                    .build();
+
+            secondBarrierToShoot = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            mirroredPoint(17.230, 70.385),
+                            mirroredPoint(55.400, 82.500)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(90.0), mirroredHeading(137.0))
+                    .build();
+
+            secondShootToThirdLineApproach = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            mirroredPoint(55.400, 82.500),
+                            mirroredPoint(60.002, 33.633),
+                            mirroredPoint(40.093, 34.846)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(137.0), mirroredHeading(180.0))
+                    .build();
+
+            thirdLineIntake = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            mirroredPoint(40.093, 34.846),
+                            mirroredPoint(14, 34.649)
+                    ))
+                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
+                    .build();
+
+            thirdLineToShoot = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            mirroredPoint(9.929, 34.649),
+                            mirroredPoint(60.002, 33.633),
                             mirroredPoint(55.400, 82.500)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(137.0))
@@ -137,13 +216,20 @@ public class RedGoal1Line extends OpMode {
                         shootThreeBalls(),
 
                         follow(follower, paths.preloadShootToFirstLineApproach),
-                        parallel(
-                                instant(() -> intakingManager.pull()),
-                                follow(follower, paths.firstLineIntake, false, 0.5)
-                        ),
-                        instant(() -> intakingManager.idle()),
+                        collectLine(paths.firstLineIntake, LINE_INTAKE_POWER),
+                        collectLine(paths.firstLineToBarrier, BARRIER_INTAKE_POWER),
+                        follow(follower, paths.firstBarrierToShoot),
+                        shootThreeBalls(),
 
-                        follow(follower, paths.firstLineToShoot),
+                        follow(follower, paths.firstShootToSecondLineApproach),
+                        collectLine(paths.secondLineIntake, LINE_INTAKE_POWER),
+                        collectLine(paths.secondLineToBarrier, BARRIER_INTAKE_POWER),
+                        follow(follower, paths.secondBarrierToShoot),
+                        shootThreeBalls(),
+
+                        follow(follower, paths.secondShootToThirdLineApproach),
+                        collectLine(paths.thirdLineIntake, LINE_INTAKE_POWER),
+                        follow(follower, paths.thirdLineToShoot),
                         shootThreeBalls()
                 )
         );
@@ -164,6 +250,16 @@ public class RedGoal1Line extends OpMode {
         Scheduler.reset();
     }
 
+    private Command collectLine(PathChain path, double maxPower) {
+        return sequential(
+                parallel(
+                        instant(() -> intakingManager.pull()),
+                        follow(follower, path, false, maxPower)
+                ),
+                instant(() -> intakingManager.idle())
+        );
+    }
+
     private Command shootThreeBalls() {
         return sequential(
                 waitUntil(() -> turret.isAtPosition()),
@@ -181,7 +277,8 @@ public class RedGoal1Line extends OpMode {
                 ? closeMidGoalPose
                 : farGoalPose;
 
-        double distance = currentPose.distanceFrom(goalPose) - 3.932;
+        double distance = currentPose.distanceFrom(goalPose)
+                + SubsystemsConfig.RobotDimensions.TurreToCenterDistance;
         double globalAngleToGoal = Math.atan2(
                 goalPose.getY() - currentPose.getY(),
                 goalPose.getX() - currentPose.getX()
@@ -210,7 +307,6 @@ public class RedGoal1Line extends OpMode {
             writer.write(json.toString());
         } catch (IOException ignored) {}
     }
-
     private static Pose mirroredPoint(double blueX, double blueY) {
         Pose mirrored = new Pose(blueX, blueY).mirror();
         return new Pose(mirrored.getX(), mirrored.getY());

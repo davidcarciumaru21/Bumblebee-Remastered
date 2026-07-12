@@ -19,7 +19,7 @@ public class Constants {
             .mass(13)
             .centripetalScaling(0)
             .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.1, 0.02))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(5, 0, 0.08, 0.02))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.5, 0, 0.08, 0.02))
             .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.17, 0.059118688115056765, 0.0022617644311522123));
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
@@ -45,7 +45,7 @@ public class Constants {
                 )
                 .mecanumDrivetrain(new MecanumConstants()
                         .useBrakeModeInTeleOp(true)
-                        .maxPower(1)
+                        .maxPower(SubsystemsConfig.Drivetrain.MAX_POWER)
                         .leftFrontMotorName(SubsystemsConfig.Drivetrain.FRONT_LEFT_MOTOR_NAME)
                         .leftRearMotorName(SubsystemsConfig.Drivetrain.BACK_LEFT_MOTOR_NAME)
                         .rightFrontMotorName(SubsystemsConfig.Drivetrain.FRONT_RIGHT_MOTOR_NAME)
