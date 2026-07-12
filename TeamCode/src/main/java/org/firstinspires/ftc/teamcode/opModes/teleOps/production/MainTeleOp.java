@@ -49,9 +49,12 @@ public class MainTeleOp extends OpMode {
         // =========================================================================
         // GAMEPAD 1: PRIMARY CHASSIS TRANSLATION AND ELEMENT INTAKE CONTROLS
         // =========================================================================
+        boolean sharePressed = gamepad1.shareWasPressed();
+        boolean shootPressed = gamepad1.rightBumperWasPressed();
+        boolean abortShootingPressed = gamepad1.leftBumperWasPressed();
 
         // Share button toggles coordinate mapping between field-relative and robot-relative modes
-        if (gamepad1.shareWasPressed()) {
+        if (sharePressed) {
             fieldCentric = !fieldCentric;
         }
 
@@ -86,13 +89,13 @@ public class MainTeleOp extends OpMode {
         }
 
         // Active Automated Firing Activation sequence
-        if (gamepad1.rightBumperWasPressed()) {
+        if (shootPressed) {
             robot.driver.shoot();
         }
 
         // Context-Based Firing Abort Override
         // If left_bumper is triggered while automated firing sequences are running, forcefully terminate shooting actions
-        if (robot.driver.isShooting() && gamepad1.leftBumperWasPressed()) {
+        if (robot.driver.isShooting() && abortShootingPressed) {
             robot.driver.stopShooting();
         }
 

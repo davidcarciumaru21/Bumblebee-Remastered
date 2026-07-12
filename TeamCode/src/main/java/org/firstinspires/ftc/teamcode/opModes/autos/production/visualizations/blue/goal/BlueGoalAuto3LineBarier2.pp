@@ -93,7 +93,7 @@
       "name": "Path 5",
       "endPoint": {
         "x": 40.093,
-        "y": 58.55,
+        "y": 54.362138284021114,
         "heading": "linear",
         "startDeg": 137,
         "endDeg": 180,
@@ -117,7 +117,7 @@
       "name": "Path 6",
       "endPoint": {
         "x": 14.0,
-        "y": 58.55,
+        "y": 54.362138284021114,
         "heading": "linear",
         "startDeg": 180,
         "endDeg": 180,
@@ -392,5 +392,5 @@
     "pathOpacity": 1
   },
   "version": "1.2.1",
-  "timestamp": "2026-07-12T11:52:49.625Z"
+  "timestamp": "2026-07-12T13:54:27.934Z"
 }

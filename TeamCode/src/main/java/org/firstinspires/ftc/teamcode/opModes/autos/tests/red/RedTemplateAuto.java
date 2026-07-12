@@ -220,6 +220,7 @@ public class RedTemplateAuto extends OpMode {
         json.addProperty("y",       endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color",   "RED");
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

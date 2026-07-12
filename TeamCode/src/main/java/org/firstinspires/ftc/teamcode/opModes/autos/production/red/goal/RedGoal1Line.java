@@ -38,12 +38,14 @@ import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
-import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
 @Autonomous(name = "Red Goal 1 Line", group = "Red")
 public class RedGoal1Line extends OpMode {
 
     private static final Pose START_POSE = mirroredPose(31.176, 132.122, 270.0);
+    private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -133,17 +135,17 @@ public class RedGoal1Line extends OpMode {
     public void start() {
         schedule(
                 sequential(
-                        follow(follower, paths.startToPreloadShoot),
+                        followWithTimeout(follower, paths.startToPreloadShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.preloadShootToFirstLineApproach),
+                        followWithTimeout(follower, paths.preloadShootToFirstLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         parallel(
                                 instant(() -> intakingManager.pull()),
-                                follow(follower, paths.firstLineIntake, false, 0.5)
+                                followWithTimeout(follower, paths.firstLineIntake, false, 0.5, LINE_INTAKE_TIMEOUT_MS)
                         ),
                         instant(() -> intakingManager.idle()),
 
-                        follow(follower, paths.firstLineToShoot),
+                        followWithTimeout(follower, paths.firstLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
         );
@@ -204,6 +206,7 @@ public class RedGoal1Line extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

@@ -47,8 +47,8 @@ public class BlueGoal1LineBarrier1 extends OpMode {
     private static final double LINE_INTAKE_POWER = 0.5;
     private static final double BARRIER_INTAKE_POWER = 0.8;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
-    private static final double LINE_INTAKE_TIMEOUT_MS = 5000.0;
-    private static final double BARRIER_INTAKE_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
+    private static final double BARRIER_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -229,6 +229,7 @@ public class BlueGoal1LineBarrier1 extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

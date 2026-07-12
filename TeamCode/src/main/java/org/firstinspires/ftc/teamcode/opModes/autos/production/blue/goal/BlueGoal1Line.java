@@ -45,7 +45,7 @@ public class BlueGoal1Line extends OpMode {
 
     private static final Pose START_POSE = new Pose(31.176, 132.122, Math.toRadians(270.0));
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
-    private static final double LINE_INTAKE_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -206,6 +206,7 @@ public class BlueGoal1Line extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

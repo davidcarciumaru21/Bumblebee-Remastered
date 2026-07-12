@@ -18,6 +18,7 @@ public class Turret implements Subsystem {
     private final Servo turret;
     private final DcMotor encoder;
     private final ElapsedTime timer = new ElapsedTime();
+    private double angleOffset = 0.0;
 
     private TurretState state           = TurretState.IDLE;
     private double      targetAngle     = 0.0;
@@ -33,17 +34,28 @@ public class Turret implements Subsystem {
         this.turret.setPosition(SubsystemsConfig.Turret.IDLE_POSITION);
         this.lastUpdateTime = timer.seconds();
     }
-
     /**
      * Sets the target alignment angle. The encoder controller applies it in {@link #update()}.
      * @param angle target angular displacement in degrees relative to the chassis forward vector
      */
     public double getAngle() {
-        return encoder.getCurrentPosition() / SubsystemsConfig.Turret.ENCODER_TICKS_PER_DEGREE;
+        return (encoder.getCurrentPosition() / SubsystemsConfig.Turret.ENCODER_TICKS_PER_DEGREE) + angleOffset;
     }
 
     public void setTargetAngle(double angle) {
         setTargetAngle(angle, 0.0);
+    }
+
+    /**
+     * Sets an angular offset that gets added to the raw encoder reading in {@link #getAngle()}.
+     * Use this to compensate for the encoder resetting to 0 between OpModes — pass in the
+     * turret's last known real-world angle (e.g. loaded from JSON) and this computes the
+     * offset needed so getAngle() reports the correct value going forward.
+     * @param lastKnownAngle the turret's actual angle in degrees, from before this OpMode started
+     */
+    public void setAngleOffset(double lastKnownAngle) {
+        double rawEncoderAngle = encoder.getCurrentPosition() / SubsystemsConfig.Turret.ENCODER_TICKS_PER_DEGREE;
+        this.angleOffset = lastKnownAngle - rawEncoderAngle;
     }
 
     public void setTargetAngle(double angle, double outOfBoundsFallbackAngle) {

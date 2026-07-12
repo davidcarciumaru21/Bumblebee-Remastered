@@ -47,8 +47,8 @@ public class BlueGoal3LineBarrier2 extends OpMode {
     private static final double LINE_INTAKE_POWER = 0.5;
     private static final double BARRIER_INTAKE_POWER = 0.8;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
-    private static final double LINE_INTAKE_TIMEOUT_MS = 5000.0;
-    private static final double BARRIER_INTAKE_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
+    private static final double BARRIER_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -118,22 +118,22 @@ public class BlueGoal3LineBarrier2 extends OpMode {
                     .addPath(new BezierCurve(
                             new Pose(55.400, 82.500),
                             new Pose(55.542, 57.526),
-                            new Pose(40.093, 58.550)
+                            new Pose(40.093, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(137.0), Math.toRadians(180.0))
                     .build();
 
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(40.093, 58.550),
-                            new Pose(14, 58.550)
+                            new Pose(40.093, 54.362138284021114),
+                            new Pose(14, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             secondLineToBarrier = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(9.929, 58.550),
+                            new Pose(9.929, 54.362138284021114),
                             new Pose(48.065, 56.067),
                             new Pose(15.230, 70.385)
                     ))
@@ -296,6 +296,7 @@ public class BlueGoal3LineBarrier2 extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

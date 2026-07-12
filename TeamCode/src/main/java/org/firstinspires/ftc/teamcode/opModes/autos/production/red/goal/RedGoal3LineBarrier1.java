@@ -38,7 +38,7 @@ import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
-import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
 @Autonomous(name = "Red Goal 3 Line Barrier 1", group = "Red")
 public class RedGoal3LineBarrier1 extends OpMode {
@@ -46,6 +46,9 @@ public class RedGoal3LineBarrier1 extends OpMode {
     private static final Pose START_POSE = mirroredPose(31.176, 132.122, 270.0);
     private static final double LINE_INTAKE_POWER = 0.5;
     private static final double BARRIER_INTAKE_POWER = 0.8;
+    private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
+    private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
+    private static final double BARRIER_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -124,14 +127,14 @@ public class RedGoal3LineBarrier1 extends OpMode {
                     .addPath(new BezierCurve(
                             mirroredPoint(55.400, 82.500),
                             mirroredPoint(55.542, 57.526),
-                            mirroredPoint(40.093, 58.550)
+                            mirroredPoint(40.093, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(137.0), mirroredHeading(180.0))
                     .build();
 
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(40.093, 58.550),
+                            mirroredPoint(40.093, 54.362138284021114),
                             mirroredPoint(14, 54.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
@@ -203,23 +206,23 @@ public class RedGoal3LineBarrier1 extends OpMode {
     public void start() {
         schedule(
                 sequential(
-                        follow(follower, paths.startToPreloadShoot),
+                        followWithTimeout(follower, paths.startToPreloadShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.preloadShootToFirstLineApproach),
+                        followWithTimeout(follower, paths.preloadShootToFirstLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.firstLineIntake, LINE_INTAKE_POWER),
-                        collectLine(paths.firstLineToBarrier, BARRIER_INTAKE_POWER),
-                        follow(follower, paths.barrierToShoot),
+                        collectLine(paths.firstLineToBarrier, BARRIER_INTAKE_POWER, BARRIER_INTAKE_TIMEOUT_MS),
+                        followWithTimeout(follower, paths.barrierToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.firstShootToSecondLineApproach),
+                        followWithTimeout(follower, paths.firstShootToSecondLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.secondLineIntake, LINE_INTAKE_POWER),
-                        follow(follower, paths.secondLineToShoot),
+                        followWithTimeout(follower, paths.secondLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        follow(follower, paths.secondShootToThirdLineApproach),
+                        followWithTimeout(follower, paths.secondShootToThirdLineApproach, DEFAULT_PATH_TIMEOUT_MS),
                         collectLine(paths.thirdLineIntake, LINE_INTAKE_POWER),
-                        follow(follower, paths.thirdLineToShoot),
+                        followWithTimeout(follower, paths.thirdLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
         );
@@ -241,10 +244,14 @@ public class RedGoal3LineBarrier1 extends OpMode {
     }
 
     private Command collectLine(PathChain path, double maxPower) {
+        return collectLine(path, maxPower, LINE_INTAKE_TIMEOUT_MS);
+    }
+
+    private Command collectLine(PathChain path, double maxPower, double timeoutMs) {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        follow(follower, path, false, maxPower)
+                        followWithTimeout(follower, path, false, maxPower, timeoutMs)
                 ),
                 instant(() -> intakingManager.idle())
         );
@@ -290,6 +297,7 @@ public class RedGoal3LineBarrier1 extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 
