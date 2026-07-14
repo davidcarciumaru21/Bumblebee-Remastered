@@ -13,7 +13,7 @@
       "name": "Path 1",
       "endPoint": {
         "x": 54.6,
-        "y": 34.82398753894079,
+        "y": 35.32398753894079,
         "heading": "linear",
         "startDeg": 90,
         "endDeg": 180
@@ -31,7 +31,7 @@
       "name": "Path 2",
       "endPoint": {
         "x": 14,
-        "y": 34.649,
+        "y": 35.149,
         "heading": "linear",
         "reverse": false,
         "startDeg": 180,

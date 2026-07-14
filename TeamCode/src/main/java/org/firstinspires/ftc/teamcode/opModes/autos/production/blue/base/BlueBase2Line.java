@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes.autos.production.blue.base;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
@@ -36,7 +35,6 @@ import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
-import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
@@ -44,9 +42,7 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 public class BlueBase2Line extends OpMode {
 
     private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
-    private static final double LINE_INTAKE_POWER = 0.5;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
-    private static final double FLYWHEEL_READY_TIMEOUT_MS = 3000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
@@ -78,47 +74,47 @@ public class BlueBase2Line extends OpMode {
             preloadShootToThirdLineApproach = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(54.6, 8.9),
-                            new Pose(54.6, 34.82398753894079)
+                            new Pose(54.6, 35.32398753894079)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(90.0), Math.toRadians(180.0))
                     .build();
 
             thirdLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(54.6, 34.82398753894079),
-                            new Pose(14.0, 34.649)
+                            new Pose(54.6, 35.32398753894079),
+                            new Pose(14.0, 35.149)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             thirdLineToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(14.0, 34.649),
-                            new Pose(52.395950155763245, 11.985669781931465)
+                            new Pose(14.0, 35.149),
+                            new Pose(52.395950155763245, 13.985669781931465)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
 
             shootToSecondLineApproach = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(52.395950155763245, 11.985669781931465),
-                            new Pose(52.395950155763245, 54.362138284021114)
+                            new Pose(52.395950155763245, 13.985669781931465),
+                            new Pose(52.395950155763245, 59.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(120.0), Math.toRadians(180.0))
                     .build();
 
             secondLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(52.395950155763245, 54.362138284021114),
-                            new Pose(14.0, 54.362138284021114)
+                            new Pose(52.395950155763245, 59.362138284021114),
+                            new Pose(12.0, 59.362138284021114)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             secondLineToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(14.0, 54.362138284021114),
-                            new Pose(52.395950155763245, 11.985669781931465)
+                            new Pose(12.0, 59.362138284021114),
+                            new Pose(52.395950155763245, 13.985669781931465)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
@@ -157,12 +153,12 @@ public class BlueBase2Line extends OpMode {
                         shootThreeBalls(),
 
                         followWithTimeout(follower, paths.preloadShootToThirdLineApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.thirdLineIntake, LINE_INTAKE_POWER, LINE_INTAKE_TIMEOUT_MS),
+                        collectLine(paths.thirdLineIntake),
                         followWithTimeout(follower, paths.thirdLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
                         followWithTimeout(follower, paths.shootToSecondLineApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.secondLineIntake, LINE_INTAKE_POWER, LINE_INTAKE_TIMEOUT_MS),
+                        collectLine(paths.secondLineIntake),
                         followWithTimeout(follower, paths.secondLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
@@ -184,11 +180,11 @@ public class BlueBase2Line extends OpMode {
         Scheduler.reset();
     }
 
-    private Command collectLine(PathChain path, double maxPower, double timeoutMs) {
+    private Command collectLine(PathChain path) {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        followWithTimeout(follower, path, false, maxPower, timeoutMs)
+                        followWithTimeout(follower, path, false, 0.5, LINE_INTAKE_TIMEOUT_MS)
                 ),
                 instant(() -> intakingManager.idle())
         );
@@ -196,11 +192,7 @@ public class BlueBase2Line extends OpMode {
 
     private Command shootThreeBalls() {
         return sequential(
-                waitUntil(() -> turret.isAtPosition()),
-                race(
-                        waitUntil(() -> flywheel.isAtSpeed()),
-                        waitMs(FLYWHEEL_READY_TIMEOUT_MS)
-                ),
+                waitUntil(() -> turret.isAtPosition() && flywheel.isAtSpeed()),
                 instant(() -> shootingManager.shoot()),
                 waitUntil(() -> shootingManager.isShooting()),
                 waitMs(SubsystemsConfig.Flywheel.THREE_BALL_SHOT_TIME_MS),
@@ -238,7 +230,7 @@ public class BlueBase2Line extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
-        json.addProperty("turret", turret.getAnglePosition());
+        json.addProperty("turret", -turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

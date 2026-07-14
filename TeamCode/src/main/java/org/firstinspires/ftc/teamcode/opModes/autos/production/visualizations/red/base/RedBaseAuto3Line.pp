@@ -13,7 +13,7 @@
       "name": "Path 1",
       "endPoint": {
         "x": 89.4,
-        "y": 34.82398753894079,
+        "y": 35.32398753894079,
         "heading": "linear",
         "startDeg": 90,
         "endDeg": 0
@@ -31,7 +31,7 @@
       "name": "Path 2",
       "endPoint": {
         "x": 130,
-        "y": 34.649,
+        "y": 35.149,
         "heading": "linear",
         "reverse": false,
         "startDeg": 0,
@@ -85,7 +85,7 @@
       "id": "redbaseauto3line-path-05",
       "name": "Path 5",
       "endPoint": {
-        "x": 130,
+        "x": 132,
         "y": 54.362138284021114,
         "heading": "linear",
         "reverse": false,

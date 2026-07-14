@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.autos.production.red.base;
+package org.firstinspires.ftc.teamcode.opModes.autos.production.blue.base;
 
 import com.google.gson.JsonObject;
 import com.pedropathing.follower.Follower;
@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Stopper;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.VoltageSensor;
-import org.firstinspires.ftc.teamcode.utils.AutoUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,24 +36,23 @@ import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.parallel;
-import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
-@Autonomous(name = "Red Base 2 Line", group = "Red")
-public class RedBase2Line extends OpMode {
+@Autonomous(name = "Blue Base 1 Line Base Base", group = "Blue")
+public class BlueBase1LineBaseBase extends OpMode {
 
-    private static final Pose START_POSE = mirroredPose(54.6, 8.9, 90.0);
+    private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
     private static final double LINE_INTAKE_POWER = 0.5;
+    private static final double BASE_INTAKE_POWER = 0.3;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
-    private static final double FLYWHEEL_READY_TIMEOUT_MS = 3000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
     private Follower follower;
     private AutoPaths paths;
 
-    private final Pose closeMidGoalPose = ShootingConfig.Goals.RED_GOAL_POSE;
-    private final Pose farGoalPose      = ShootingConfig.Goals.RED_FAR_GOAL_POSE;
+    private final Pose closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
+    private final Pose farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
 
     private VoltageSensor voltageSensor;
     private Flywheel      flywheel;
@@ -71,57 +69,59 @@ public class RedBase2Line extends OpMode {
         public final PathChain preloadShootToThirdLineApproach;
         public final PathChain thirdLineIntake;
         public final PathChain thirdLineToShoot;
-        public final PathChain shootToSecondLineApproach;
-        public final PathChain secondLineIntake;
-        public final PathChain secondLineToShoot;
+        public final PathChain shootToBaseApproach;
+        public final PathChain baseIntake;
+        public final PathChain baseToShoot;
 
         public AutoPaths(Follower follower) {
             preloadShootToThirdLineApproach = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(54.6, 8.9),
-                            mirroredPoint(54.6, 34.82398753894079)
+                            new Pose(54.6, 8.9),
+                            new Pose(54.6, 35.32398753894079)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(90.0), mirroredHeading(180.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(90.0), Math.toRadians(180.0))
                     .build();
 
             thirdLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(54.6, 34.82398753894079),
-                            mirroredPoint(14.0, 34.649)
+                            new Pose(54.6, 35.32398753894079),
+                            new Pose(14.0, 35.149)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
                     .build();
 
             thirdLineToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(14.0, 34.649),
-                            mirroredPoint(52.395950155763245, 11.985669781931465)
+                            new Pose(14.0, 35.149),
+                            new Pose(52.395950155763245, 13.985669781931465)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(120.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
 
-            shootToSecondLineApproach = follower.pathBuilder()
-                    .addPath(new BezierLine(
-                            mirroredPoint(52.395950155763245, 11.985669781931465),
-                            mirroredPoint(52.395950155763245, 54.362138284021114)
+            shootToBaseApproach = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            new Pose(52.395950155763245, 13.985669781931465),
+                            new Pose(27.982767462581315, 62.17905582509486),
+                            new Pose(7.3, 29.108423176669472)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(120.0), mirroredHeading(180.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(120.0), Math.toRadians(270.0))
                     .build();
 
-            secondLineIntake = follower.pathBuilder()
+            baseIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            mirroredPoint(52.395950155763245, 54.362138284021114),
-                            mirroredPoint(14.0, 54.362138284021114)
+                            new Pose(7.3, 29.108423176669472),
+                            new Pose(7.3, 11.302711754315341)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(180.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(270.0), Math.toRadians(270.0))
                     .build();
 
-            secondLineToShoot = follower.pathBuilder()
-                    .addPath(new BezierLine(
-                            mirroredPoint(14.0, 54.362138284021114),
-                            mirroredPoint(52.395950155763245, 11.985669781931465)
+            baseToShoot = follower.pathBuilder()
+                    .addPath(new BezierCurve(
+                            new Pose(7.3, 11.302711754315341),
+                            new Pose(34.40464762037944, 13.451295060411532),
+                            new Pose(52.62767530306418, 13.836638491118329)
                     ))
-                    .setLinearHeadingInterpolation(mirroredHeading(180.0), mirroredHeading(120.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(270.0), Math.toRadians(120.0))
                     .build();
         }
     }
@@ -158,13 +158,13 @@ public class RedBase2Line extends OpMode {
                         shootThreeBalls(),
 
                         followWithTimeout(follower, paths.preloadShootToThirdLineApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.thirdLineIntake, LINE_INTAKE_POWER, LINE_INTAKE_TIMEOUT_MS),
+                        collectLine(paths.thirdLineIntake, LINE_INTAKE_POWER),
                         followWithTimeout(follower, paths.thirdLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        followWithTimeout(follower, paths.shootToSecondLineApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.secondLineIntake, LINE_INTAKE_POWER, LINE_INTAKE_TIMEOUT_MS),
-                        followWithTimeout(follower, paths.secondLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
+                        followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
+                        collectLine(paths.baseIntake, BASE_INTAKE_POWER),
+                        followWithTimeout(follower, paths.baseToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls()
                 )
         );
@@ -181,15 +181,15 @@ public class RedBase2Line extends OpMode {
 
     @Override
     public void stop() {
-        writeEndPose("RED");
+        writeEndPose("BLUE");
         Scheduler.reset();
     }
 
-    private Command collectLine(PathChain path, double maxPower, double timeoutMs) {
+    private Command collectLine(PathChain path, double maxPower) {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        followWithTimeout(follower, path, false, maxPower, timeoutMs)
+                        followWithTimeout(follower, path, false, maxPower, LINE_INTAKE_TIMEOUT_MS)
                 ),
                 instant(() -> intakingManager.idle())
         );
@@ -197,11 +197,7 @@ public class RedBase2Line extends OpMode {
 
     private Command shootThreeBalls() {
         return sequential(
-                waitUntil(() -> turret.isAtPosition()),
-                race(
-                        waitUntil(() -> flywheel.isAtSpeed()),
-                        waitMs(FLYWHEEL_READY_TIMEOUT_MS)
-                ),
+                waitUntil(() -> turret.isAtPosition() && flywheel.isAtSpeed()),
                 instant(() -> shootingManager.shoot()),
                 waitUntil(() -> shootingManager.isShooting()),
                 waitMs(SubsystemsConfig.Flywheel.THREE_BALL_SHOT_TIME_MS),
@@ -239,27 +235,12 @@ public class RedBase2Line extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
-        json.addProperty("turret", turret.getAnglePosition());
+        json.addProperty("turret", -turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(json.toString());
         } catch (IOException ignored) {}
-    }
-
-
-    private static Pose mirroredPoint(double blueX, double blueY) {
-        Pose mirrored = new Pose(blueX, blueY).mirror();
-        return new Pose(mirrored.getX(), mirrored.getY());
-    }
-
-    private static Pose mirroredPose(double blueX, double blueY, double blueHeadingDeg) {
-        Pose mirrored = new Pose(blueX, blueY).mirror();
-        return new Pose(mirrored.getX(), mirrored.getY(), mirroredHeading(blueHeadingDeg));
-    }
-
-    private static double mirroredHeading(double blueHeadingDeg) {
-        return Math.toRadians(AutoUtils.mirrorHeading(blueHeadingDeg));
     }
 }

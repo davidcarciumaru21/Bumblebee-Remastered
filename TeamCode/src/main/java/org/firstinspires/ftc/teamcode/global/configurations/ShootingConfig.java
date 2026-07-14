@@ -52,7 +52,7 @@ public class ShootingConfig {
      */
     public static final class Far {
         public static final double SCORE_HEIGHT        = 48.0;
-        public static final double SCORE_ANGLE         = Math.toRadians(-10);
+        public static final double SCORE_ANGLE         = Math.toRadians(-5);
         public static final double PASS_THROUGH_RADIUS = 0.0;
     }
 
