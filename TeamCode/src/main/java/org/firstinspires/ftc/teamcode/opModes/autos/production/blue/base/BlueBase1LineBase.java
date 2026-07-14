@@ -39,8 +39,8 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
-@Autonomous(name = "Blue Base 1 Line Base Base", group = "Blue")
-public class BlueBase1LineBaseBase extends OpMode {
+@Autonomous(name = "Blue Base 1 Line Base", group = "Blue")
+public class BlueBase1LineBase extends OpMode {
 
     private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
     private static final double LINE_INTAKE_POWER = 0.5;
