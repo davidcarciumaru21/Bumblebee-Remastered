@@ -110,6 +110,7 @@ public class SubsystemsConfig {
      * Manages velocity acceleration limits, velocity tracking, and feedforward tuning vectors.
      * MOTOR_NAME_1 / 2      — Matching hardware configuration entries for both paired drive motors.
      * IDLE_POWER            — Constant base power modifier used to keep the rotors idling at low energy between active shots.
+     * IDLE_RPM              — Closed-loop flywheel speed held while no shot is actively requested.
      * TICKS_PER_REV         — Resolution count of the underlying digital optical encoder system.
      * MAX_ACCEL_RPM_PER_SEC — Safety limit restricting acceleration changes to avoid breaking gears or tearing high-speed belts.
      * AT_SPEED_TOLERANCE    — Maximum RPM error variance allowed before system signals "ready-to-fire" to the indexer.
@@ -121,6 +122,7 @@ public class SubsystemsConfig {
         public static final String MOTOR_NAME_1          = "FlywheelMotor1";
         public static final String MOTOR_NAME_2          = "FlywheelMotor2";
         public static final double IDLE_POWER            = 0.0;
+        public static final double IDLE_RPM              = 2400.0;
         public static final double TICKS_PER_REV         = 28.0;
         public static final double THREE_BALL_SHOT_TIME_MS = 900.0;
         public static final double MAX_ACCEL_RPM_PER_SEC = 24000.0;
@@ -221,11 +223,54 @@ public class SubsystemsConfig {
     public static final class Limelight {
         public static final String HARDWARE_MAP_NAME = "limelight";
         public static final int DEFAULT_PIPELINE = 0;
-        public static final int GREEN_BALL_PIPELINE = 1;
-        public static final int PURPLE_BALL_PIPELINE = 2;
+        public static final int GREEN_BALL_PIPELINE = 8;
+        public static final int PURPLE_BALL_PIPELINE = 7;
         public static final double METERS_TO_INCHES = 39.3701;
         public static final double PEDRO_FIELD_CENTER_OFFSET_INCHES = 72.0;
         public static final double MAX_VALID_Z_ERROR_INCHES = 6.0;
         public static final double FILTER_ALPHA = 0.25;
+
+        public static final class Maze {
+            public static final int ROW_COUNT = 3;
+            public static final int COLUMN_COUNT = 3;
+            public static final int GREEN_ROW_COUNT = 2;
+            
+            public static final double ORIGIN_X_INCHES = 47.2;
+            public static final double ORIGIN_Y_INCHES = 23.5;
+            public static final double ROW_SPACING_INCHES = 36.0;
+            public static final double COLUMN_SPACING_INCHES = 18.0;
+            public static final double SCAN_FRONT_CLEARANCE_INCHES = 6.0;
+            public static final double PASSED_ROW_REAR_CLEARANCE_INCHES = 14.0;
+            public static final double SCAN_X_OFFSET_INCHES =
+                    RobotDimensions.LENGTH / 2.0 + SCAN_FRONT_CLEARANCE_INCHES;
+            public static final double HEADING_DEGREES = 90.0;
+
+            public static final double START_X_INCHES = ORIGIN_X_INCHES
+                    - SCAN_X_OFFSET_INCHES * Math.cos(Math.toRadians(HEADING_DEGREES));
+            public static final double START_Y_INCHES = ORIGIN_Y_INCHES
+                    - SCAN_X_OFFSET_INCHES * Math.sin(Math.toRadians(HEADING_DEGREES));
+            public static final double START_HEADING_DEGREES = HEADING_DEGREES;
+
+            public static final boolean USE_POSE_BASED_COLUMN_TX = false;
+            public static final double[] COLUMN_X_DEGREES = {-16.0, 0.0, 16.0};
+            public static final double FIELD_BEARING_TO_TX_SIGN = -1.0;
+            public static final double COLUMN_X_TOLERANCE_DEGREES = 8.0;
+            public static final double SCAN_TARGET_X_DEGREES = 0.0;
+            public static final double SCAN_TARGET_X_TOLERANCE_DEGREES = 8.0;
+            public static final double MIN_TARGET_AREA = 0.01;
+
+            public static final double PIPELINE_SETTLE_MS = 180.0;
+            public static final double ROW_SCAN_TIME_MS = 350.0;
+            public static final double COLUMN_SCAN_TIME_MS = 350.0;
+            public static final double MAX_ROW_SCAN_TIME_MS = 1400.0;
+            public static final boolean ALLOW_UNRELIABLE_FALLBACK = true;
+            public static final int FALLBACK_COLUMN_INDEX = 1;
+            public static final double PATH_TIMEOUT_MS = 5000.0;
+            public static final double PATH_MAX_POWER = 0.45;
+            public static final double LEARNED_PATH_MAX_POWER = 1.0;
+            public static final double BASE_COLLECTION_TIME_MS = 1000.0;
+            public static final double SHOOT_START_TIMEOUT_MS = 6000.0;
+            public static final double SHOOT_STOP_TIMEOUT_MS = 2000.0;
+        }
     }
 }

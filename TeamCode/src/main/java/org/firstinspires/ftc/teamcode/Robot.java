@@ -236,7 +236,7 @@ public class Robot {
         // --- Active Shooting Interfaces ---
         public void shoot()         { shootingManager.shoot(); }
         public void stopShooting()  { shootingManager.stop(); }
-        public boolean isShooting() { return shootingManager.isShooting(); }
+        public boolean isShooting() { return shootingManager.isActive(); }
 
         // --- Active Intake/Exclusion Interfaces ---
         public void feed()          { intakingManager.pull(); }

@@ -43,9 +43,9 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 @Autonomous(name = "Blue Base 1 Line Base Cycle", group = "Blue")
 public class BlueBase1LineBaseCycle extends OpMode {
 
-    private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
+    private static final Pose START_POSE = new Pose(54.803, 8.661417, Math.toRadians(90.0));
     private static final double LINE_INTAKE_POWER = 0.5;
-    private static final double BASE_INTAKE_POWER = 0.3;
+    private static final double BASE_INTAKE_POWER = 0.8;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
@@ -169,7 +169,12 @@ public class BlueBase1LineBaseCycle extends OpMode {
                         shootThreeBalls(),
 
                         followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.baseIntake, BASE_INTAKE_POWER)
+                        collectLine(paths.baseIntake, BASE_INTAKE_POWER),
+                        followWithTimeout(follower, paths.baseToShoot, DEFAULT_PATH_TIMEOUT_MS),
+                        shootThreeBalls()
+
+                        //followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
+                        //collectLine(paths.baseIntake, BASE_INTAKE_POWER)
                 )
         );
     }

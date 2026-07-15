@@ -41,7 +41,7 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 @Autonomous(name = "Blue Base 2 Line", group = "Blue")
 public class BlueBase2Line extends OpMode {
 
-    private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
+    private static final Pose START_POSE = new Pose(54.803, 8.661417, Math.toRadians(90.0));
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
@@ -230,7 +230,7 @@ public class BlueBase2Line extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
-        json.addProperty("turret", -turret.getAnglePosition());
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

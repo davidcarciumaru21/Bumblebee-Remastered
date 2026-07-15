@@ -42,7 +42,7 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 @Autonomous(name = "Blue Base 2 Line Base Cycle", group = "Blue")
 public class BlueBase2LineBaseCycle extends OpMode {
 
-    private static final Pose START_POSE = new Pose(54.6, 8.9, Math.toRadians(90.0));
+    private static final Pose START_POSE = new Pose(54.803, 8.661417, Math.toRadians(90.0));
     private static final double LINE_INTAKE_POWER = 0.5;
     private static final double BASE_INTAKE_POWER = 0.3;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
@@ -192,14 +192,14 @@ public class BlueBase2LineBaseCycle extends OpMode {
                         followWithTimeout(follower, paths.secondLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.baseIntake, BASE_INTAKE_POWER),
-                        followWithTimeout(follower, paths.baseToShoot, DEFAULT_PATH_TIMEOUT_MS),
-                        shootThreeBalls(),
-
-                        followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.baseIntake, BASE_INTAKE_POWER)
-
+                        Groups.loop(
+                                sequential(
+                                        followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
+                                        collectLine(paths.baseIntake, BASE_INTAKE_POWER),
+                                        followWithTimeout(follower, paths.baseToShoot, DEFAULT_PATH_TIMEOUT_MS),
+                                        shootThreeBalls()
+                                )
+                        )
                 )
         );
     }
@@ -269,7 +269,7 @@ public class BlueBase2LineBaseCycle extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
-        json.addProperty("turret", -turret.getAnglePosition());
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

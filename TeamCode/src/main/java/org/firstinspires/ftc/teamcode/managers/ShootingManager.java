@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.utils.Pair;
  *
  * State machine:
  * - IDLE            — stopper closed, intake left to caller control
+ * - SPINNING_UP     — flywheel accelerates from idle to the current shot target
  * - ELEVATE_STOPPER — stopper opens, waits TIME_TO_OPEN_MS then transitions to SHOOTING
  * - SHOOTING        — intaking manager shoot pull, continues until stop() is called
  * - CLOSE_STOPPER   — stopper closes, intaking manager idle, waits TIME_TO_CLOSE_MS then IDLE
@@ -61,15 +62,15 @@ public class ShootingManager {
     /** Starts shooting sequence. Transitions to ELEVATE_STOPPER. */
     public void shoot() {
         if (state == ShootingManagerState.IDLE) {
-            state = ShootingManagerState.ELEVATE_STOPPER;
-            stopper.open();
-            timer.reset();
+            state = ShootingManagerState.SPINNING_UP;
+            stopper.close();
+            intakingManager.idle();
         }
     }
 
     /** Stops shooting. Transitions to CLOSE_STOPPER. */
     public void stop() {
-        if (state == ShootingManagerState.SHOOTING) {
+        if (state != ShootingManagerState.IDLE && state != ShootingManagerState.CLOSE_STOPPER) {
             state = ShootingManagerState.CLOSE_STOPPER;
             stopper.close();
             intakingManager.idle();
@@ -113,6 +114,9 @@ public class ShootingManager {
 
     /** Returns true if currently shooting. */
     public boolean isShooting() { return state == ShootingManagerState.SHOOTING; }
+
+    /** Returns true while any automated shooting sequence is active. */
+    public boolean isActive() { return state != ShootingManagerState.IDLE; }
 
     /**
      * Calculates ballistic launch angle and velocity with velocity compensation.
@@ -217,7 +221,13 @@ public class ShootingManager {
             turret.setTargetAngle(-Math.toDegrees(targets.first), turretClampFallbackAngle);
         }
 
-        flywheel.setSpeedInchesPerSecond(targets.second);
+        if (state == ShootingManagerState.SPINNING_UP
+                || state == ShootingManagerState.ELEVATE_STOPPER
+                || state == ShootingManagerState.SHOOTING) {
+            flywheel.setSpeedInchesPerSecond(targets.second);
+        } else {
+            flywheel.setRPM(SubsystemsConfig.Flywheel.IDLE_RPM);
+        }
 
         // update subsystems
         flywheel.update();
@@ -231,8 +241,17 @@ public class ShootingManager {
             case IDLE:
                 break;
 
+            case SPINNING_UP:
+                if (flywheel.isAtSpeed()) {
+                    stopper.open();
+                    timer.reset();
+                    state = ShootingManagerState.ELEVATE_STOPPER;
+                }
+                break;
+
             case ELEVATE_STOPPER:
-                if (timer.milliseconds() >= SubsystemsConfig.Stopper.TIME_TO_OPEN_MS) {
+                if (timer.milliseconds() >= SubsystemsConfig.Stopper.TIME_TO_OPEN_MS
+                        && flywheel.isAtSpeed()) {
                     state = ShootingManagerState.SHOOTING;
                 }
                 break;

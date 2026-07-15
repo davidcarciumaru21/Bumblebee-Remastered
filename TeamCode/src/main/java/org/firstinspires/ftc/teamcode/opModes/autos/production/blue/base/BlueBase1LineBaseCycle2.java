@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.ivy.groups.Groups;
 import com.pedropathing.math.Vector;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -39,14 +40,15 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 
-@Autonomous(name = "Blue Base 1 Line Base", group = "Blue")
-public class BlueBase1LineBase extends OpMode {
+@Autonomous(name = "Blue Base 1 Line Base Cycle 2", group = "Blue")
+public class BlueBase1LineBaseCycle2 extends OpMode {
 
     private static final Pose START_POSE = new Pose(54.803, 8.661417, Math.toRadians(90.0));
     private static final double LINE_INTAKE_POWER = 0.5;
-    private static final double BASE_INTAKE_POWER = 0.3;
+    private static final double BASE_INTAKE_POWER = 1.0;
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
+    private static final double BASE_INTAKE_TIMEOUT_MS = 5000.0;
 
     private Follower follower;
     private AutoPaths paths;
@@ -69,9 +71,10 @@ public class BlueBase1LineBase extends OpMode {
         public final PathChain preloadShootToThirdLineApproach;
         public final PathChain thirdLineIntake;
         public final PathChain thirdLineToShoot;
-        public final PathChain shootToBaseApproach;
-        public final PathChain baseIntake;
-        public final PathChain baseToShoot;
+        public final PathChain firstBaseIntake;
+        public final PathChain firstBaseToShoot;
+        public final PathChain secondBaseIntake;
+        public final PathChain secondBaseToShoot;
 
         public AutoPaths(Follower follower) {
             preloadShootToThirdLineApproach = follower.pathBuilder()
@@ -98,30 +101,38 @@ public class BlueBase1LineBase extends OpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
 
-            shootToBaseApproach = follower.pathBuilder()
+            firstBaseIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             new Pose(52.395950155763245, 13.985669781931465),
-                            new Pose(27.982767462581315, 62.17905582509486),
-                            new Pose(7.3, 29.108423176669472)
+                            new Pose(44.91015169194866, 12.897316219369895),
+                            new Pose(10.584230097901107, 8.511736565620435)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(120.0), Math.toRadians(270.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(120.0), Math.toRadians(180.0))
                     .build();
 
-            baseIntake = follower.pathBuilder()
+            firstBaseToShoot = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(7.3, 29.108423176669472),
-                            new Pose(7.3, 11.302711754315341)
+                            new Pose(8.584230097901107, 8.511736565620435),
+                            new Pose(51.946432226092426, 13.714458892448398)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(270.0), Math.toRadians(270.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
 
-            baseToShoot = follower.pathBuilder()
+            secondBaseIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(7.3, 11.302711754315341),
-                            new Pose(34.40464762037944, 13.451295060411532),
-                            new Pose(52.62767530306418, 13.836638491118329)
+                            new Pose(51.946432226092426, 13.714458892448398),
+                            new Pose(44.68311510293678, 28.306387310457577),
+                            new Pose(.8649555060355185, 27.963659952504113)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(270.0), Math.toRadians(120.0))
+                    .setLinearHeadingInterpolation(Math.toRadians(120.0), Math.toRadians(180.0))
+                    .build();
+
+            secondBaseToShoot = follower.pathBuilder()
+                    .addPath(new BezierLine(
+                            new Pose(7.8649555060355185, 27.963659952504113),
+                            new Pose(52.14488358513371, 13.636139089611241)
+                    ))
+                    .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(120.0))
                     .build();
         }
     }
@@ -162,10 +173,17 @@ public class BlueBase1LineBase extends OpMode {
                         followWithTimeout(follower, paths.thirdLineToShoot, DEFAULT_PATH_TIMEOUT_MS),
                         shootThreeBalls(),
 
-                        followWithTimeout(follower, paths.shootToBaseApproach, DEFAULT_PATH_TIMEOUT_MS),
-                        collectLine(paths.baseIntake, BASE_INTAKE_POWER),
-                        followWithTimeout(follower, paths.baseToShoot, DEFAULT_PATH_TIMEOUT_MS),
-                        shootThreeBalls()
+                        Groups.loop(
+                                sequential(
+                                        collectLine(paths.firstBaseIntake, BASE_INTAKE_POWER, BASE_INTAKE_TIMEOUT_MS),
+                                        followWithTimeout(follower, paths.firstBaseToShoot, DEFAULT_PATH_TIMEOUT_MS),
+                                        shootThreeBalls(),
+
+                                        collectLine(paths.secondBaseIntake, BASE_INTAKE_POWER, BASE_INTAKE_TIMEOUT_MS),
+                                        followWithTimeout(follower, paths.secondBaseToShoot, DEFAULT_PATH_TIMEOUT_MS),
+                                        shootThreeBalls()
+                                )
+                        )
                 )
         );
     }
@@ -186,10 +204,14 @@ public class BlueBase1LineBase extends OpMode {
     }
 
     private Command collectLine(PathChain path, double maxPower) {
+        return collectLine(path, maxPower, LINE_INTAKE_TIMEOUT_MS);
+    }
+
+    private Command collectLine(PathChain path, double maxPower, double timeoutMs) {
         return sequential(
                 parallel(
                         instant(() -> intakingManager.pull()),
-                        followWithTimeout(follower, path, false, maxPower, LINE_INTAKE_TIMEOUT_MS)
+                        followWithTimeout(follower, path, false, maxPower, timeoutMs)
                 ),
                 instant(() -> intakingManager.idle())
         );

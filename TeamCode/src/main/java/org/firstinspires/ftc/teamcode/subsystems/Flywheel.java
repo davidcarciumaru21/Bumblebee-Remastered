@@ -85,7 +85,7 @@ public class Flywheel implements Subsystem {
      * @param rpm target RPM
      */
     public void setRPM(double rpm) {
-        this.targetRPM = rpm;
+        this.targetRPM = Math.max(0.0, rpm);
         this.state     = FlywheelState.RAMPING_UP;
     }
 
@@ -94,7 +94,7 @@ public class Flywheel implements Subsystem {
      * @param speed ball speed in inches per second
      */
     public void setSpeedInchesPerSecond(double speed) {
-        this.targetRPM = 12.32978 * speed - 117.20705;
+        this.targetRPM = Math.max(0.0, 12.32978 * speed - 117.20705);
         this.state     = FlywheelState.RAMPING_UP;
     }
 
