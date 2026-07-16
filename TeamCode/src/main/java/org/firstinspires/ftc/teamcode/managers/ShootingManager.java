@@ -64,7 +64,7 @@ public class ShootingManager {
         if (state == ShootingManagerState.IDLE) {
             state = ShootingManagerState.SPINNING_UP;
             stopper.close();
-            intakingManager.idle();
+            intakingManager.stop();
         }
     }
 
@@ -73,7 +73,7 @@ public class ShootingManager {
         if (state != ShootingManagerState.IDLE && state != ShootingManagerState.CLOSE_STOPPER) {
             state = ShootingManagerState.CLOSE_STOPPER;
             stopper.close();
-            intakingManager.idle();
+            intakingManager.stop();
             timer.reset();
         }
     }
@@ -243,6 +243,7 @@ public class ShootingManager {
 
             case SPINNING_UP:
                 if (flywheel.isAtSpeed()) {
+                    intakingManager.stop();
                     stopper.open();
                     timer.reset();
                     state = ShootingManagerState.ELEVATE_STOPPER;
@@ -257,6 +258,7 @@ public class ShootingManager {
                 break;
 
             case SHOOTING:
+                // Once shooting begins, feed every ball continuously at the same full power.
                 intakingManager.shootPull();
                 break;
 

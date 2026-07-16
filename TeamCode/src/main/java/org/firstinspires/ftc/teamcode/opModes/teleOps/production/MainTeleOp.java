@@ -76,25 +76,24 @@ public class MainTeleOp extends OpMode {
         // Core Intake and Collection Processing Block
         // Evaluates actions strictly when the shooting manager state machine is idle to protect components
         if (!robot.driver.isShooting()) {
-            if (gamepad1.right_trigger > 0.1) {
+            if (gamepad1.dpad_up) {
+                // Reverse only while D-pad Up is held
+                robot.driver.eject();
+            } else if (gamepad1.right_trigger > 0.1) {
                 // Collect elements inward
                 robot.driver.feed();
-            } else if (gamepad1.left_bumper) {
-                // Eject elements outward via the left bumper modifier
-                robot.driver.eject();
             } else {
                 // Maintain passive idle holding force
                 robot.driver.stopFeed();
             }
         }
 
-        // Active Automated Firing Activation sequence
+        // Right Bumper starts the automated shooting sequence.
         if (shootPressed) {
             robot.driver.shoot();
         }
 
-        // Context-Based Firing Abort Override
-        // If left_bumper is triggered while automated firing sequences are running, forcefully terminate shooting actions
+        // Left Bumper stops the automated shooting sequence.
         if (robot.driver.isShooting() && abortShootingPressed) {
             robot.driver.stopShooting();
         }

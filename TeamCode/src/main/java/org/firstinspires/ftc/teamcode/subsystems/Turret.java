@@ -31,7 +31,6 @@ public class Turret implements Subsystem {
         this.encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.turret = hardwareMap.get(Servo.class, SubsystemsConfig.Turret.SERVO_NAME);
-        this.turret.setPosition(SubsystemsConfig.Turret.IDLE_POSITION);
         this.lastUpdateTime = timer.seconds();
     }
     /**

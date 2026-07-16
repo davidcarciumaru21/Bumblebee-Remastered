@@ -70,6 +70,17 @@ public class IntakingManager {
         }
     }
 
+    /**
+     * Fully stops both collection motors. Unlike IDLE, this applies zero power and is used while
+     * the shooting system waits for the flywheel and stopper before feeding balls.
+     */
+    public void stop() {
+        if (this.state != IntakingManagerState.STOPPED) {
+            this.state = IntakingManagerState.STOPPED;
+            clearEmergencyOverrides();
+        }
+    }
+
     // =========================================================================
     // EMERGENCY OVERRIDE INTERFACES (DIRECT BUS BYPASS ROUTING)
     // =========================================================================
@@ -107,6 +118,11 @@ public class IntakingManager {
             case IDLE:
                 intake.idle();
                 indexer.idle();
+                break;
+
+            case STOPPED:
+                intake.setPower(0.0);
+                indexer.setPower(0.0);
                 break;
 
             case PULL:
