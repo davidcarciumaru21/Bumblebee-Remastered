@@ -163,6 +163,7 @@ public class Robot {
             allianceColor    = AllianceColor.BLUE;
             closeMidGoalPose = ShootingConfig.Goals.BLUE_GOAL_POSE;
             farGoalPose      = ShootingConfig.Goals.BLUE_FAR_GOAL_POSE;
+            turret.setAngleOffset(0.0);
         }
 
         goalPose = closeMidGoalPose;

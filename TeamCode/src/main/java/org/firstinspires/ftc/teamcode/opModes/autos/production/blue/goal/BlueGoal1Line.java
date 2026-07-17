@@ -43,7 +43,7 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 @Autonomous(name = "Blue Goal 1 Line", group = "Blue")
 public class BlueGoal1Line extends OpMode {
 
-    private static final Pose START_POSE = new Pose(31.176, 132.122, Math.toRadians(270.0));
+    private static final Pose START_POSE = new Pose(31.1, 132.1, Math.toRadians(270.0));
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 

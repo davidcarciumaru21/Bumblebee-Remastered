@@ -30,6 +30,7 @@ public class WritePoseBlueAuto extends LinearOpMode {
         json.addProperty("y",       132.12227414330215);
         json.addProperty("heading", Math.toRadians(270));
         json.addProperty("color",   "BLUE");
+        json.addProperty("turret", 0.0);
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

@@ -244,7 +244,7 @@ public class BlueBase1LineBaseCycle extends OpMode {
         json.addProperty("y", endPose.getY());
         json.addProperty("heading", endPose.getHeading());
         json.addProperty("color", color);
-        json.addProperty("turret", -turret.getAnglePosition());
+        json.addProperty("turret", turret.getAnglePosition());
 
         File file = AppUtil.getInstance().getSettingsFile("RobotSettings.json");
 

@@ -58,7 +58,7 @@ public class SubsystemsConfig {
         public static final DcMotorSimple.Direction DIRECTION  = DcMotorSimple.Direction.FORWARD;
         public static final double                  PULL_POWER = 1.0;
         public static final double                  PUSH_POWER = -1.0;
-        public static final double                  IDLE_POWER = 0.4;
+        public static final double                  IDLE_POWER = 0.2;
     }
 
     /**
@@ -224,7 +224,7 @@ public class SubsystemsConfig {
         public static final String HARDWARE_MAP_NAME = "limelight";
         public static final int DEFAULT_PIPELINE = 0;
         public static final int GREEN_BALL_PIPELINE = 8;
-        public static final int PURPLE_BALL_PIPELINE = 7;
+        public static final int PURPLE_BALL_PIPELINE = 8;
         public static final double METERS_TO_INCHES = 39.3701;
         public static final double PEDRO_FIELD_CENTER_OFFSET_INCHES = 72.0;
         public static final double MAX_VALID_Z_ERROR_INCHES = 6.0;
@@ -239,7 +239,7 @@ public class SubsystemsConfig {
             public static final double ORIGIN_Y_INCHES = 23.5;
             public static final double ROW_SPACING_INCHES = 36.0;
             public static final double COLUMN_SPACING_INCHES = 18.0;
-            public static final double SCAN_FRONT_CLEARANCE_INCHES = 6.0;
+            public static final double SCAN_FRONT_CLEARANCE_INCHES = 10.0;
             public static final double PASSED_ROW_REAR_CLEARANCE_INCHES = 14.0;
             public static final double SCAN_X_OFFSET_INCHES =
                     RobotDimensions.LENGTH / 2.0 + SCAN_FRONT_CLEARANCE_INCHES;
@@ -266,7 +266,7 @@ public class SubsystemsConfig {
             public static final boolean ALLOW_UNRELIABLE_FALLBACK = true;
             public static final int FALLBACK_COLUMN_INDEX = 1;
             public static final double PATH_TIMEOUT_MS = 5000.0;
-            public static final double PATH_MAX_POWER = 0.45;
+            public static final double PATH_MAX_POWER = 0.65;
             public static final double LEARNED_PATH_MAX_POWER = 1.0;
             public static final double BASE_COLLECTION_TIME_MS = 1000.0;
             public static final double SHOOT_START_TIMEOUT_MS = 6000.0;
