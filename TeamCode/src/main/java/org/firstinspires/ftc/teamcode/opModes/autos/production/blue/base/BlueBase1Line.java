@@ -41,7 +41,7 @@ import static org.firstinspires.ftc.teamcode.utils.AutoUtils.followWithTimeout;
 @Autonomous(name = "Blue Base 1 Line", group = "Blue")
 public class BlueBase1Line extends OpMode {
 
-    private static final Pose START_POSE = new Pose(54.803, 8.661417, Math.toRadians(90.0));
+    private static final Pose START_POSE = new Pose(55.165, 8.661417, Math.toRadians(90.0));
     private static final double DEFAULT_PATH_TIMEOUT_MS = 5000.0;
     private static final double LINE_INTAKE_TIMEOUT_MS = 2500.0;
 
@@ -70,15 +70,15 @@ public class BlueBase1Line extends OpMode {
         public AutoPaths(Follower follower) {
             preloadShootToThirdLineApproach = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(54.6, 8.9),
-                            new Pose(54.6, 35.32398753894079)
+                            new Pose(54.803, 8.661417),
+                            new Pose(54.803, 35.32398753894079)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(90.0), Math.toRadians(180.0))
                     .build();
 
             thirdLineIntake = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(54.6, 35.32398753894079),
+                            new Pose(54.803, 35.32398753894079),
                             new Pose(14.0, 35.149)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))

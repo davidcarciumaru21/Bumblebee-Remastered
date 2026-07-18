@@ -141,6 +141,7 @@ public class Robot {
             String color   = json.get("color").getAsString();
             double turretPosition = json.get("turret").getAsDouble();
 
+
             turret.setAngleOffset(turretPosition);
 
             // Push the extracted vector positions out to the absolute tracker layout
